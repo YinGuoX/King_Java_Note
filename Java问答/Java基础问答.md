@@ -455,8 +455,7 @@
   - 这些错误发生时，JVM一般会选择线程终止
 - 受检查异常：Exception中的一种：
   - Java 代码在编译过程中，如果受检查异常没有被 `catch`/`throw` 处理的话，就没办法通过编译 。
-  - 除了`RuntimeException`及其子类以外
-  - 其他的`Exception`类及其子类都属于检查异常 。常见的受检查异常有： IO 相关的异常、`ClassNotFoundException` 、`SQLException`...。
+  - 除了`RuntimeException`及其子类以外其他的`Exception`类及其子类都属于检查异常 。常见的受检查异常有： IO 相关的异常、`ClassNotFoundException` 、`SQLException`...。
 - 不受检查异常：Exception的一种：
   - Java 代码在编译过程中 ，我们即使不处理不受检查异常也可以正常通过编译。
   - `RuntimeException` 及其子类都统称为非受检查异常，

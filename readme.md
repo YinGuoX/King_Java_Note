@@ -479,6 +479,377 @@
 
 # 5. Java
 
+- 可以参考：
+  - [1_Java再概览](./Java/1_Java再概览.md)
+  - [Java基础问答](./Java问答/Java基础问答.md)
+  - [Java集合问答](./Java问答/Java集合问答.md)
+  - [Java数据结构](./Java问答/Java数据结构.md)
+  - [Java多线程问答](./Java问答/Java多线程问答.md)
+  - [1_多线程](./Java多线程/1_多线程.md)
+  - [2_JUC](./Java多线程/2_JUC.md)
+  - [1_JavaIO(了解即可)](./JavaIO/1_JavaIO.md)
+  - [2_JavaBNA(详细最好看Netty)](./JavaIO/2_JavaBNA.md)
+  - [JVM问答](./Java问答/JVM问答.md)
+  - [最全JVM](./JVM/JVM.md)
+- 浏览后将要明白：
+  - 什么是Java？JVM？JDK？JRE？面向对象？数据类型？常用类？方法？关键字？
+  - 接口和抽象类？重载和重写？反射？注解？泛型？异常？
+  - Java如何保存数据？保存对象？操作对象？底层原理？容器？
+  - Collection和Map？ArrayList? LinkedList? Vector? HashSet? TreeSet? LinkedSet? HashMap? HashTable? TreeMap? LinkedHashMap? CopyAndWriteArrayList? ConcurrentHashMap? 增删改查的基本原理？源码实现？为什么是这样做？
+  - java如何实现多线程？线程池机制？线程运行状态？线程协作？线程同步机制？Sychronized？ReentratLock？Volatile? JMM?  CAS? JUC？AQS？ThreadLocal？
+  - Java IO？BIO？NIO？AIO？
+  - JVM组成部分？类加载子系统？类加载器？类加载过程？双亲委派机制？JVM内存模型？如何标定垃圾？如何收集垃圾？垃圾收集器？垃圾收集策略？对象的创建过程？对象的内存分配？执行引擎？解释器？JIT编译器？
+- 浏览后可以思考？
+  - java高级语言的设计？数据计算？数据处理？数据存储？异常机制？如何充分使用计算机资源？如何读取数据？如何平台无关？如何自动分配内存？如何自动垃圾回收？如何加速编译执行？
+
+## 5.1 Java基础
+
+- 面向过程和面向对象？
+- Java的优点？
+- 面向对象三大特性？
+
+- Java的数据类型？
+
+  - Byte char short int float long double boolean
+  - 对应的包装类型？
+  - 自动装箱和拆箱？
+  - 缓存池？
+
+- Java的String类？具体实现？StringBuffer? StringBuilder?
+
+- Java的运算？参数传递方式？类型转换？Switch？
+
+- Java的关键字？
+
+  - final：修饰变量(不可变常量) 修饰方法(不可重写) 修饰类(不可继承)
+  - static：修饰变量 修饰方法 修饰语句块 修饰内部类
+    - 初始化顺序：静态变量 静态语句块 构造函数
+
+- Object类方法？
+
+  - equals()：自反性 对称性 传递性 一致性 与null比较
+  - hashCode()：返回哈希值，覆盖equals()时一般都要覆盖hashCode方法
+  - toString()
+  - clone()：原型模式，浅拷贝，深拷贝？
+
+- 抽象类和接口？区别？
+
+  - 继承和实现？
+  - 设计层面？模板设计is a，行为规范like a
+
+- 重载(方法)和重写(子类)？
+
+- 成员变量和局部变量？
+
+  - 语法形式？存储方式？生命周期？初始化值？
+
+- ==和equals?
+
+- 反射？优点？缺点？
+
+  - ```java
+    // 获取一个Class对象，就是JVM中的唯一的类元信息，存储在方法区中
+    Class.forName("xxx.ccc")
+    ```
+
+  - 反射可以提供运行时的类信息
+
+- Java的异常？
+
+  - Error：OutOfMemoryError StackOverflowError 
+  - Exception：
+    - 受检查异常：IO、SQL
+    - 不受检查异常：RuntimeException，`NullPointerException`、`NumberFormatException`（字符串转换为数字）、`ArrayIndexOutOfBoundsException`（数组越界）、`ClassCastException`（类型转换错误）、`ArithmeticException`（算术错误）等。
+
+- try{}catch{}finally{}？return谁？
+
+- Java泛型？参数化类型？
+
+  - 编译时校验，运行时搽除
+
+- Java的注解？编译运行时解析，起说明 配置作用
+
+- Java和C++的区别？
+
+  - 面向对象？面向过程？
+  - JVM跨平台
+  - 指针？垃圾回收？继承？
+
+- JVM？JRE？JDK？
+
+## 5.2 Java容器
+
+- Java容器有哪些？
+  - Collection：存储对象的集合
+  - Map：K-V映射表，可以理解为存储两个对象的集合
+- Collection具体组成？需要源码剖析！
+  - Set：
+    - TreeSet：红黑树实现，支持有序性操作
+    - HashSet：基于HashMap实现，支持快速查找，不支持有序性
+    - LinkedHashSet：具有HashSet的查找效率，基于HashMap和双向链表维护元素的插入顺序
+  - List：
+    - ArrayList：Object数组
+      - 默认大小：10
+      - 扩容方式：grow()：oldCapacity+oldCapacity>>1 使用Arrays.copyOf()
+      - 删除元素：System.arraycopy
+    - Vector：线程安全的Object数组
+      - 扩容方式：默认2倍，可以设置
+    - CopyOnWriterArrayList：线程安全的List！
+      - 复制数组，读写分离，写后需要将原始数组指向新的复制数组，因此可能导致数据不一致，不可重复读？幻读？
+    - LinkedList：Node双向链表
+  - Queue：
+    - LinkedList：
+    - PriorityQueue：基于堆实现的优先队列
+- Map具体组成？需要源码剖析！
+  - TreeMap：基于红黑树实现
+  - HashMap：基于哈希表实现
+    - Entry(Node)：存储K-V,并且是一个节点，可以组成链表
+    - 存储结构：Entry类型的数组（桶）
+    - 默认大小：16
+    - 如何计算哈希值？如何确定桶的下标？
+      - hash()获取哈希值，如何尽可能均匀？高位移动+与运算
+      - 哈希值h&(n-1)取模：确定桶的下标
+    - 何时扩容？如何扩容？
+      - threshold默认为0.75！
+      - 使用resize()扩容，复制移动重新插入，此时需要重新计算每个key对应的下标，2的倍数的优点！移动少，取模计算快
+    - 如何解决哈希冲突？
+      - 拉链法
+    - 何时变为红黑树？为什么要变成红黑树？
+      - 拉链法解决哈希冲突产生的链表长度大于等于8时
+      - 红黑树的优点？平均查找长度
+  - HashTable：线程安全的基于哈希表的实现
+    - 如何实现同步？synchronized
+    - 默认大小：10
+    - 如何扩容？2n+1
+  - HashMap和HashTable的区别？
+    - 线程安全？效率？null？初始容量？扩容大小？底层数据结构？哈希值计算？
+    - 传统哈希表？素数？2的倍数？优缺点？
+  - ConcurrentHashMap：线程安全的HashMap
+    - 与HashMap类似
+    - 如何实现同步？
+      - JDK1.7：ReentrantLock=>分段锁
+      - JDK1.8：CAS+synchronized=>锁首节点
+  - LinkedHashMap：使用双向链表维护了元素顺序
+    - 继承了HashMap，维护了一个双向链表用来维护插入顺序或者LRU顺序
+    - 可以用来实现LRU缓存
+
+## 5.3 Java并发
+
+- 为什么要使用多线程？
+
+- Java如何使用线程？
+
+  - Runnabel接口 Callable接口 继承Thread类
+  - 如何选择？区别？
+  - execute()? submit()?
+
+- Java线程池机制？三大方法？七大参数？四种拒绝策略？
+
+  - Executor？CachedThreadPool? FixedTreadPool? SingleTreadExecutor?
+  - ThreadPoolExecutor？七大参数？四种拒绝策略？
+  - 原理？源码剖析？运行过程？
+    - 核心线程满=>阻塞队列满=>才调用到最大线程数量=>拒绝策略
+
+- 什么是守护线程？什么是非守护线程？
+
+- sleep？yield？
+
+- Java的线程中断？
+
+  - Interrupted()
+  - Executor的shutdown()
+
+- **Java的互斥同步机制？**
+
+  - synchronized：JVM层面
+    - 同步：代码块，方法，静态方法，类
+    - 底层原理？monitorenter? monitorexit? ACC_SYCHRONIZED?
+    - JVM对synchronized进行的优化？如何减少开销？
+      - 自旋锁？
+      - 锁清除？逃逸分析？
+      - 锁粗化？
+      - 轻量级锁？偏向锁？重量级锁？
+        - 对象头的内存布局+状态
+  - ReentrantLock：具体代码，AQS实现
+  - 比较：
+    - 实现方式？性能？等待可中断？公平锁？
+  - volatile和synchronized?
+    - 互补？轻量级实现？主要确保可见性？
+
+- Java的线程协作？
+
+  - join() wait() notify() notifyAll() =>同步方法或者代码块中使用
+  - wait()和sleep()的区别？
+    - 方法：wait()是Object的方法，sleep是Thread方法，使用范围？
+    - 是否释放锁
+  - await() signal() signalAll()=>juc提供的，通过Condition来调用即可
+
+- Java线程状态？
+
+  - new runable blocked waiting timed_waitting terminated
+
+- JUC的Atomic类？
+
+  - 原子四大类？
+  - CAS？ABA问题？乐观锁？悲观锁？
+
+- JUC的AQS？
+
+  - 有什么用？
+
+  - 核心思想？state+CLH队列
+
+  - 怎么用？AQS为资源的共享方式？
+
+    - Exclusive？公平锁？非公平锁？
+
+    - Share？
+
+    - 组合式？
+
+    - 模板方法模式？
+
+    - ```java
+      isHeldExclusively()//该线程是否正在独占资源。只有用到condition才需要去实现它。
+      tryAcquire(int)//独占方式。尝试获取资源，成功则返回true，失败则返回false。
+      tryRelease(int)//独占方式。尝试释放资源，成功则返回true，失败则返回false。
+      tryAcquireShared(int)//共享方式。尝试获取资源。负数表示失败；0表示成功，但没有剩余可用资源；正数表示成功，且有剩余资源。
+      tryReleaseShared(int)//共享方式。尝试释放资源，成功则返回true，失败则返回false。
+      ```
+
+  - 实例？
+
+    - CountDownLatch、CyclicBarrier、Semaphore、ReadWriteLock
+
+- JUC的BlockingQueue?
+
+  - FIFO队列：LinkedBlockingQueue, ArrayBlockingQueue
+  - 优先级队列：PriorityBlockingQueue
+
+- JUC的ForkJoin?
+
+- JMM？
+
+  - 是什么？有什么用？
+  - 具体概念？工作内存？主内存？这两个内存如何交互？
+  - 三大特性？原子性？可见性？有序性？如何实现？
+
+- ThreadLocal？
+
+  - 有什么用？
+  - 怎么使用？
+  - 源码剖析？
+  - ThreadLocalMap？里面的Entity的key弱引用带来的问题？
+
+- Java线程安全？
+
+  - 什么是线程安全？
+  - 如何实现线程安全？不可变？互斥同步(阻塞同步)？非阻塞同步(CAS，乐观锁)？无同步(线程本地存储)？
+
+## 5.4 Java IO
+
+- IO类别？
+  - 磁盘操作：File
+  - 字节操作：InputStream OutputStream
+  - 字符操作：Reader Writer
+  - 对象操作：Serializable
+  - 网络操作：Socket
+  - 非阻塞IO：NIO
+- BIO？NIO？AIO？
+- BIO？NIO？
+  - BIO以流的方式处理数据，NIO以块的方式处理数据
+  - BIO通过字节流或者字符流进行操作，NIO通过Channel和Buffer进行操作
+  - NIO双向读取不阻塞？加了两层？
+    - Channel操作方向
+    - Buffer操作数据？capacity? Limit? Position? Mark?
+    - Select实现不阻塞！
+
+## 5.5 JVM
+
+- 类的加载机制？
+  - 加载、链接、初始化、使用、卸载
+- 类的加载过程？
+  - 加载：获取二进制字节流
+  - 链接：
+    - 验证？
+    - 准备？类变量(分清楚实例变量)分配内存，设置初始值
+    - 解析？符号引用=>直接引用？
+  - 初始化：clinit()
+- 类的初始化时机？
+  - 主动引用？被动引用？
+- 类相等？完整包名一致，加载器一致
+- 类加载器？
+  - Bootstrap ClassLoader
+  - Extension ClassLoader
+  - Systems ClassLoader
+  - 用户自定义加载器？继承ClassLoader类，并且重写loadClass方法。或者重写findClass()方法
+- 双亲委派机制？优点？
+- JVM内存模型？
+  - 程序计数器？
+  - Java虚拟机栈？栈帧？局部变量表？操作数栈？方法返回地址？动态链接？
+  - 本地方法栈？
+  - 堆？新生代？老年代？
+  - 方法区？运行常量池？
+    - 永久代？元空间？
+  - 直接内存？
+- Java对象创建过程？
+  - 类加载检查？
+  - 分配内存？指针碰撞法？空闲列表法？
+    - 产生的并发问题如何解决？TLAB、CAS+失败重试
+  - 初始化类变量？
+  - 设置对象头？那个类的实例？唯一编号(hash值)？GC分代年龄？是否加锁？
+  - 执行init()方法
+- 对象的访问定位方式？
+  - 句柄？直接指针？
+- 垃圾收集？
+  - 如何找垃圾？
+    - 引用计数法？优点？缺点
+    - 可达性分析算法？什么可以是GC Roots?
+  - finalize()？对象复活？
+  - 对象引用类型？强引用？软引用？弱引用？虚引用？
+  - 垃圾收集算法？
+    - 标记清除算法？优点？缺点？
+    - 标记整理算法？优点？缺点？
+    - 复制算法？优点？缺点？
+    - 分代收集算法？优点？缺点？
+    - 增量收集算法？优点？缺点？
+  - 垃圾收集器？
+    - Serial：单GC线程+复制算法
+    - ParNew：多GC线程(并行)+复制算法
+    - Parallel Scavenge：多GC线程+吞吐量优先(自适应调节策略)
+    - Serial Old：单GC线程+标记整理算法
+    - Parallel Old：多GC线程+标记整理算法
+    - CMS？优点？缺点？
+      - 并发+多GC线程+低延迟(STW)
+      - 初始标记 并发标记 重新标记 并发清除
+    - G1？优点？缺点？
+      - 并行+并发+复制算法+标记整理算法=>低延迟下的高吞吐量！
+      - 可预测的停顿时间模型
+      - 初始标记 并发标记 最终标记 筛选回收
+    - ZGC？
+- 垃圾回收策略？内存回收策略？
+  - Minor GC？何时调用？
+  - Major GC？何时调用？
+  - Full GC：包括了方法区的垃圾收集？何时调用
+- 对象如何在JVM堆内存中分配？
+  - 一般对象Eden区
+  - 大对象，长期存活对象老年代=>数组，字符串
+  - 动态年龄判断？某个年龄大小超过了幸存者0区的一半，就可以作为新的晋升年龄的阈值
+  - 空间分配担保？何时使用空间分配担保？
+    - Eden区满，要把对象移到老年代
+    - Jdk6之前：
+      - Minor GC之前，老年代最大可用来续空间>新生代所有对象空间的和？Minor GC是否安全
+      - 否则判断是否进行空间分配担保机制？是否>历次晋升到老年代对象的平均大小？是否使用Full GC
+    - JDK6之后：
+      - Minor GC之前，只要老年代的连续空间大于新生代对象的总大小、或者大于历次晋升的平均大小就会进行Minor GC
+      - 否则进行Full GC
+- JVM的执行引擎？
+  - 解释器？
+  - 即时(JIT)编译器？机器码？热点代码？
+  - 解释器和JIT编译器的优劣？
+  - 01？机器指令？汇编语言？高级语言？
+  - AOT编译器？
+
 
 
 

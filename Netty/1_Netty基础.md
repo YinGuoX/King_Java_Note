@@ -218,7 +218,7 @@
   - ![image-20211122093253165](1_Netty基础.assets/image-20211122093253165.png)
   - 每个 `Channel` 都会对应一个 `Buffer`。
   - `Selector` 对应一个线程，一个线程对应多个 `Channel`（连接）。
-  - 该图反应了有三个 `Channel` 注册到该 `Selector` //程序
+  - 该图反应了有三个 `Channel` 注册到该 `Selector` 程序
   - Server切换到哪个 `Channel` 是由事件(selector根据事件选择)决定的，`Event` 就是一个重要的概念。
   - `Selector` 会根据不同的事件，在各个通道上切换。
   - `Buffer` 就是一个内存块，底层是有一个数组
