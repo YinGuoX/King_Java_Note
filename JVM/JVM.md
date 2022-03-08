@@ -367,7 +367,7 @@ Class Test{
 
 - 局部变量表(Local Variables)
 - 操作数栈(Operand Stack)(表达式栈)
-- 动态链接(Dynamic Linking)(指向运行时常量次的方法引用)
+- 动态链接(Dynamic Linking)(指向运行时常量池的方法引用)
 - 方法返回地址(Return Address)(方法正常退出或异常退出的定义)
 - 一些附加信息
 

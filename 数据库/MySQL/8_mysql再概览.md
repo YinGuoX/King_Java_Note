@@ -495,6 +495,7 @@
   - 比较重要的字段有：
     - select_type : 查询类型，有简单查询、联合查询、子查询等
     - key : 使用的索引
+    - type：
       - 类型从好到坏的排列：system>const>eq_ref>ref>range>index>ALL
     - rows : 扫描的行数
 - 优化数据访问？
