@@ -440,16 +440,17 @@
         D
      */
     ```
-
+    
     class A {
     
         public void show(A obj) {
             System.out.println("A.show(A)");
         }
-    
+        
         public void show(C obj) {
             System.out.println("A.show(C)");
         }
+    
     }
     
     class B extends A {
@@ -458,6 +459,7 @@
         public void show(A obj) {
             System.out.println("B.show(A)");
         }
+    
     }
     
     class C extends B {
@@ -472,7 +474,7 @@
         B b = new B();
         C c = new C();
         D d = new D();
-    
+        
         // 在 A 中存在 show(A obj)，直接调用
         a.show(a); // A.show(A)
         // 在 A 中不存在 show(B obj)，将 B 转型成其父类 A
@@ -481,12 +483,16 @@
         b.show(c); // A.show(C)
         // 在 B 中不存在 show(D obj)，但是存在从 A 继承来的 show(C obj)，将 D 转型成其父类 C
         b.show(d); // A.show(C)
-    
+        
         // 引用的还是 B 对象，所以 ba 和 b 的调用结果一样
         A ba = new B();
         ba.show(c); // A.show(C)
         ba.show(d); // A.show(C)
+    
     }
+    
+    ```
+    
     ```
 
 - **重载(Overload)：**存在于同一个类中，指一个方法与已经存在的方法名称上相同，但是参数类型、个数、顺序至少有一个不同。
@@ -2317,9 +2323,12 @@
   - ```java
     public class FutureTask<V> implements RunnableFuture<V>
     ```
-
+    
     // 接口间可以进行多继承
     public interface RunnableFuture<V> extends Runnable, Future<V>
+    
+    ```
+    
     ```
 
 - FutureTask 可用于异步获取执行结果或取消执行任务的场景。当一个计算任务需要执行很长时间，那么就可以用 FutureTask 来封装这个任务，主线程在完成自己的任务之后再去获取结果。
@@ -2726,15 +2735,20 @@
           return unsafe.getAndAddInt(this, valueOffset, 1) + 1;
       }
       ```
-
+      
       public final int getAndAddInt(Object var1, long var2, int var4) {
+      
           int var5;
           do {
               var5 = this.getIntVolatile(var1, var2);
           } while(!this.compareAndSwapInt(var1, var2, var5, var5 + var4));
-    
+          
           return var5;
+      
       }
+      
+      ```
+      
       ```
     
     - var1 指示对象内存地址，var2 指示该字段相对对象内存地址的偏移，var4 指示操作需要加的数值，这里为 1。通过  getIntVolatile(var1, var2) 得到旧的预期值，通过调用 compareAndSwapInt() 来进行 CAS  比较，如果该字段内存地址中的值等于 var5，那么就更新内存地址为 var1+var2 的变量为 var5+var4。
