@@ -5,27 +5,27 @@
 ## 1. 什么是JUC？
 
 - 是java.util下面的几个工具包：concurrent、concurrent.atomic、concurrent.locks
--  为什么要使用JUC？
+- 为什么要使用JUC？
   - 因为在写业务代码时，使用普通的线程Thread类效率低，并且Runnalble：没有返回值、效率相比于Callable相对较低，并且无返回值
 
 ## 2. 线程和进程
 
 - 进程：一个代码的执行过程，一个进程可以包含多个进程，至少包含一个！
-
+  
   - Java默认有几个进程？2个：main+GC
 
 - 线程：
 
 - 并发和并行？
-
+  
   - 并发：多线程操作同一个资源
-
+    
     - cpu单核：快速交替
-
+  
   - 并行：多个人一起走
-
+    
     - cpu多核：多个线程可以同时执行：线程池
-
+  
   - ```java
     // 获取CPU的核数
     // CPU密集型、IO密集型未完待续
@@ -37,7 +37,7 @@
 - 线程有几个状态？
 
 - wait和sleep的区别？
-
+  
   - 来自不同的类：
     - wait=>Object
     - sleep=>Thread
@@ -56,7 +56,7 @@
 > 传统的Synchronized
 
 - 真正的多线程开发，线程就是一个单独的资源类，没有任何附属的操作
-
+  
   - 1.属性、方法OOP
 
 - ```java
@@ -97,14 +97,14 @@
   ```
 
 > Lock接口
->
+> 
 > - 实现类：
 >   - ReentrantLock：可重入锁
 >   - ReentrantReadWirteLock.ReadLock：读锁
 >   - ReentrantReadWirteLock.WriteLock：写锁
 
 - 简单分析ReentrantLock
-
+  
   - ```java
     // ReentrantLock构造函数源码
     public ReentrantLock() {
@@ -246,15 +246,14 @@ class Data{
     }
 
 }
-
 ```
 
 - 存在问题：如果有多个线程：A B C D 4个线程，怎么解决？=》虚假唤醒问题！(官方文档里面看！)
-
+  
   - 等待应该总是在循环中！
-
+  
   - if 改成 while
-
+  
   - ```java
     /*
     线程间的通信问题：生产者和消费者问题：等待唤醒，通知唤醒
@@ -332,7 +331,6 @@ class Data{
         }
     
     }
-    
     ```
 
 > JUC：Lock await signal
@@ -437,7 +435,6 @@ class Data2{
     }
 
 }
-
 ```
 
 > condition实现精准通知和唤醒：期望线程顺序执行：A->B->C
@@ -805,7 +802,7 @@ class Data3{
   ```
 
 - 小结：
-
+  
   - synchronized到底锁的是什么？
     - new this 具体的一个手机
     - static Class唯一的一个模板
@@ -814,42 +811,42 @@ class Data3{
 
 > List不安全：
 
- ```java
+```java
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /*
- 会报：java.util.ConcurrentModificationException ： 并发修改异常
+会报：java.util.ConcurrentModificationException ： 并发修改异常
 并发下， ArrayList不安全
- 解决方案：
- 1.最笨的方法
- List<String> list = new Vector<>();=>太老了，就是在add中加了synchronized
- 2.用Collection方法，添加上synchronized
- List<String> list = Collections.synchronizedList(new ArrayList<>());
- 3.JUC：CopyOnWrite：写入时复制　COW　操作系统中的一种优化策略
- 多个线程调用list的时候，读取是固定的，写入的时候为了避免覆盖，造成数据问题，采用写入时复制
- List<String> list = new CopyOnWriteArrayList<>();
+解决方案：
+1.最笨的方法
+List<String> list = new Vector<>();=>太老了，就是在add中加了synchronized
+2.用Collection方法，添加上synchronized
+List<String> list = Collections.synchronizedList(new ArrayList<>());
+3.JUC：CopyOnWrite：写入时复制　COW　操作系统中的一种优化策略
+多个线程调用list的时候，读取是固定的，写入的时候为了避免覆盖，造成数据问题，采用写入时复制
+List<String> list = new CopyOnWriteArrayList<>();
 
- CopyOnWriteArrayList和Vector的区别？
- Vector 使用的是synchronized效率低
- CopyOnWriteArrayList使用的是Lock，效率高
- */
+CopyOnWriteArrayList和Vector的区别？
+Vector 使用的是synchronized效率低
+CopyOnWriteArrayList使用的是Lock，效率高
+*/
 public class UnsafeList {
-    public static void main(String[] args) {
+   public static void main(String[] args) {
 
 //        List<String> list = new ArrayList<>();
 //        List<String> list = new Vector<>();
-        List<String> list = Collections.synchronizedList(new ArrayList<>());
+       List<String> list = Collections.synchronizedList(new ArrayList<>());
 //        List<String> list = new CopyOnWriteArrayList<>();
-        for (int i = 0; i <10 ; i++) {
-            new Thread(()->{
-                list.add(UUID.randomUUID().toString().substring(0,5));
-                System.out.println(list);
-            },String.valueOf(i)).start();
-        }
-    }
+       for (int i = 0; i <10 ; i++) {
+           new Thread(()->{
+               list.add(UUID.randomUUID().toString().substring(0,5));
+               System.out.println(list);
+           },String.valueOf(i)).start();
+       }
+   }
 }
- ```
+```
 
 > Set不安全
 
@@ -881,7 +878,6 @@ public class UnsafeSet {
         }
     }
 }
-
 ```
 
 > HashSet底层是什么？
@@ -929,24 +925,22 @@ public class UnsafeMap {
         }
     }
 }
-
 ```
 
 ## 7. Callable
 
 - 看官方文档！
-
+  
   - 可以有返回值
   - 可以抛出异常
   - 调用方法不同，从之前的Runable的run()变为了call()
 
 - Thread怎么调用Callable方法？
-
+  
   - 通过Thread、Runnable、RunnableFuture、FutureTask、Callable之间的关系！
   - ![image-20211023161710299](2_JUC.assets/image-20211023161710299.png)
 
 - ```java
-  
   import java.util.concurrent.Callable;
   import java.util.concurrent.ExecutionException;
   import java.util.concurrent.FutureTask;
@@ -991,11 +985,10 @@ public class UnsafeMap {
           return "call()";
       }
   }
-  
   ```
 
 - 注意：
-
+  
   - Callable有缓存，结果可能需要等待，会阻塞！
 
 ## 8.常用辅助类
@@ -1028,7 +1021,6 @@ public class UnsafeMap {
           System.out.println("close door");
       }
   }
-  
   ```
 
 ### 8.2 CyclicBarrier
@@ -1192,146 +1184,145 @@ public class UnsafeMap {
   
       }
   }
-  
-  
+  ```
+
   // 自定义缓存。模拟读写操作
   class MyChache{
       private volatile Map<String,Object> map = new HashMap<>();
-  
+
       // 存，写
       public void put(String key,Object value){
           System.out.println(Thread.currentThread().getName()+"写入："+key);
           map.put(key,value);
           System.out.println(Thread.currentThread().getName()+"写入完毕");
       }
-  
+    
       // 取，读
       public void get(String key){
           System.out.println(Thread.currentThread().getName()+"读取"+key);
           Object o = map.get(key);
           System.out.println(Thread.currentThread().getName()+"读取完毕");
       }
-  }
-  ```
 
+  }
+
+```
 ## 10. 阻塞队列、同步队列
 
 ### 10.1 阻塞队列
 
 - 阻塞？队列：
 
-  - 写入：如果队列满了，就必须阻塞等待读取
-  - 读取：如果队列是空的，就必须阻塞等待写入
+- 写入：如果队列满了，就必须阻塞等待读取
+- 读取：如果队列是空的，就必须阻塞等待写入
 
 - BlockingQueue 接口：
 
-  - 看官方文档+实现类
-  - ![image-20211023181530893](2_JUC.assets/image-20211023181530893.png)
+- 看官方文档+实现类
+- ![image-20211023181530893](2_JUC.assets/image-20211023181530893.png)
 
 - 什么时候会使用到阻塞队列？
 
-  - 多线程并发、线程池
+- 多线程并发、线程池
 
 - 学习使用：
 
-  - 四组API：
+- 四组API：
 
-    - 抛出异常
-    - 不会抛出异常
-    - 阻塞等待
-    - 超时等待
+  - 抛出异常
+  - 不会抛出异常
+  - 阻塞等待
+  - 超时等待
 
-  - | 方式     | 抛出异常  | 无异常有返回值 | 阻塞等待 | 超时等待 |
-    | -------- | --------- | -------------- | -------- | -------- |
-    | 添加     | add()     | offer()        | put()    | offer()  |
-    | 删除     | remove()  | poll()         | take()   | poll()   |
-    | 获取队首 | element() | peek()         | 无       | 无       |
+- | 方式     | 抛出异常  | 无异常有返回值 | 阻塞等待 | 超时等待 |
+  | -------- | --------- | -------------- | -------- | -------- |
+  | 添加     | add()     | offer()        | put()    | offer()  |
+  | 删除     | remove()  | poll()         | take()   | poll()   |
+  | 获取队首 | element() | peek()         | 无       | 无       |
 
 - ```java
-  import java.util.concurrent.ArrayBlockingQueue;
-  import java.util.concurrent.TimeUnit;
-  
-  public class BlockingQueueTest {
-      public static void main(String[] args) throws InterruptedException {
-  //        test1();
-  //        test2();
-  //        test3();
-          test4();
-      }
-  
-      // 抛出异常
-      public static void test1() {
-          // 要设置队列的大小
-          ArrayBlockingQueue<Object> blockingQueue = new ArrayBlockingQueue<>(3);
-          // 抛出异常：java.util.NoSuchElementException
-  //        System.out.println(blockingQueue.remove());
-  
-          System.out.println(blockingQueue.add("a"));
-          System.out.println(blockingQueue.add("b"));
-          System.out.println(blockingQueue.add("c"));
-  
-          // 查看队首元素
-          System.out.println(blockingQueue.element());
-  
-          // 抛出异常：java.lang.IllegalStateException: Queue full
-  //        System.out.println(blockingQueue.add("d"));
-      }
-  
-      // 不抛出异常，有返回值
-      public static void test2() {
-          // 要设置队列的大小
-          ArrayBlockingQueue<Object> blockingQueue = new ArrayBlockingQueue<>(3);
-          // 不会抛出异常！但是会返回null
-          System.out.println(blockingQueue.poll());
-  
-          System.out.println(blockingQueue.offer("a"));
-          System.out.println(blockingQueue.offer("b"));
-          System.out.println(blockingQueue.offer("c"));
-  
-          // 查看队首元素
-          System.out.println(blockingQueue.peek());
-  
-          // 不会抛出异常！但是会返回false
-          System.out.println(blockingQueue.offer("d"));
-      }
-  
-      // 阻塞：一直等待
-      public static void test3() throws InterruptedException {
-          // 要设置队列的大小
-          ArrayBlockingQueue<Object> blockingQueue = new ArrayBlockingQueue<>(3);
-  
-          // 没有元素，也会一直阻塞
-  //        System.out.println(blockingQueue.take());
-  
-          blockingQueue.put("a");
-          blockingQueue.put("b");
-          blockingQueue.put("c");
-  
-          // 队列没有位置了，一直阻塞
-          blockingQueue.put("d");
-  
-      }
-  
-      // 阻塞：等待超时
-      public static void test4() throws InterruptedException {
-          // 要设置队列的大小
-          ArrayBlockingQueue<Object> blockingQueue = new ArrayBlockingQueue<>(3);
-  
-          blockingQueue.poll(2,TimeUnit.SECONDS);
-          System.out.println("已经超时不取了");
-  
-          blockingQueue.offer("a");
-          blockingQueue.offer("b");
-          blockingQueue.offer("c");
-          // 等待2秒后超时退出
-          blockingQueue.offer("d",2, TimeUnit.SECONDS);
-          System.out.println("已经超时退出了");
-  
-      }
-  }
-  
-  
-  ```
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+public class BlockingQueueTest {
+    public static void main(String[] args) throws InterruptedException {
+//        test1();
+//        test2();
+//        test3();
+        test4();
+    }
+
+    // 抛出异常
+    public static void test1() {
+        // 要设置队列的大小
+        ArrayBlockingQueue<Object> blockingQueue = new ArrayBlockingQueue<>(3);
+        // 抛出异常：java.util.NoSuchElementException
+//        System.out.println(blockingQueue.remove());
+
+        System.out.println(blockingQueue.add("a"));
+        System.out.println(blockingQueue.add("b"));
+        System.out.println(blockingQueue.add("c"));
+
+        // 查看队首元素
+        System.out.println(blockingQueue.element());
+
+        // 抛出异常：java.lang.IllegalStateException: Queue full
+//        System.out.println(blockingQueue.add("d"));
+    }
+
+    // 不抛出异常，有返回值
+    public static void test2() {
+        // 要设置队列的大小
+        ArrayBlockingQueue<Object> blockingQueue = new ArrayBlockingQueue<>(3);
+        // 不会抛出异常！但是会返回null
+        System.out.println(blockingQueue.poll());
+
+        System.out.println(blockingQueue.offer("a"));
+        System.out.println(blockingQueue.offer("b"));
+        System.out.println(blockingQueue.offer("c"));
+
+        // 查看队首元素
+        System.out.println(blockingQueue.peek());
+
+        // 不会抛出异常！但是会返回false
+        System.out.println(blockingQueue.offer("d"));
+    }
+
+    // 阻塞：一直等待
+    public static void test3() throws InterruptedException {
+        // 要设置队列的大小
+        ArrayBlockingQueue<Object> blockingQueue = new ArrayBlockingQueue<>(3);
+
+        // 没有元素，也会一直阻塞
+//        System.out.println(blockingQueue.take());
+
+        blockingQueue.put("a");
+        blockingQueue.put("b");
+        blockingQueue.put("c");
+
+        // 队列没有位置了，一直阻塞
+        blockingQueue.put("d");
+
+    }
+
+    // 阻塞：等待超时
+    public static void test4() throws InterruptedException {
+        // 要设置队列的大小
+        ArrayBlockingQueue<Object> blockingQueue = new ArrayBlockingQueue<>(3);
+
+        blockingQueue.poll(2,TimeUnit.SECONDS);
+        System.out.println("已经超时不取了");
+
+        blockingQueue.offer("a");
+        blockingQueue.offer("b");
+        blockingQueue.offer("c");
+        // 等待2秒后超时退出
+        blockingQueue.offer("d",2, TimeUnit.SECONDS);
+        System.out.println("已经超时退出了");
+
+    }
+}
+```
 
 ### 10.2 同步队列
 
@@ -1386,7 +1377,7 @@ public class UnsafeMap {
 ## 11. 线程池
 
 > 池化技术：
->
+> 
 > - 程序运行就会占用资源=》优化资源的使用=》池化技术！
 > - 线程池、连接池、内存池、对象池...=>这些里面元素的创建、消耗都十分消耗资源
 > - 池化技术：事先准备好一些资源，有人要用就到池里面获取，用完后放回线程池
@@ -1399,9 +1390,9 @@ public class UnsafeMap {
 ### 11.1 三大方法
 
 - 阿里巴巴开发手册：
-  
+
 - ![image-20211023185713238](2_JUC.assets/image-20211023185713238.png)
-  
+
 - ```java
   import java.util.concurrent.ExecutorService;
   import java.util.concurrent.Executors;
@@ -1429,64 +1420,63 @@ public class UnsafeMap {
               // 程序关闭时，线程池也要关闭！
               service.shutdown();
           }
-  
-  
-  
-      }
-  }
-  
   ```
 
+      }
+
+  }
+
+```
 ### 11.2 七大参数
 
 - 看源码分析：
 
 - ```java
-  public static ExecutorService newSingleThreadExecutor() {
-          return new FinalizableDelegatedExecutorService
-              (new ThreadPoolExecutor(1, 1,
+public static ExecutorService newSingleThreadExecutor() {
+        return new FinalizableDelegatedExecutorService
+            (new ThreadPoolExecutor(1, 1,
+                                    0L, TimeUnit.MILLISECONDS,
+                                    new LinkedBlockingQueue<Runnable>()));
+}
+
+public static ExecutorService newFixedThreadPool(int nThreads) {
+        return new ThreadPoolExecutor(nThreads, nThreads,
                                       0L, TimeUnit.MILLISECONDS,
-                                      new LinkedBlockingQueue<Runnable>()));
-  }
-  
-  public static ExecutorService newFixedThreadPool(int nThreads) {
-          return new ThreadPoolExecutor(nThreads, nThreads,
-                                        0L, TimeUnit.MILLISECONDS,
-                                        new LinkedBlockingQueue<Runnable>());
-  }
-  
-  public static ExecutorService newCachedThreadPool() {
-      return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
-                                    60L, TimeUnit.SECONDS,
-                                    new SynchronousQueue<Runnable>());
-  }
-  
-  // 可以发现 三大方法的本质都是：ThreadPoolExecutor()
-  public ThreadPoolExecutor(int corePoolSize, // 核心线程池大小
-                            int maximumPoolSize, // 最大线程池大小
-                            long keepAliveTime, // 保持连接时间，超时了多少会释放资源
-                            TimeUnit unit,// 超时单位
-                            BlockingQueue<Runnable> workQueue, // 阻塞队列
-                            ThreadFactory threadFactory, // 线程工厂，创建线程的，一般不用懂
-                            RejectedExecutionHandler handler) { // 拒绝策略
-      if (corePoolSize < 0 ||
-          maximumPoolSize <= 0 ||
-          maximumPoolSize < corePoolSize ||
-          keepAliveTime < 0)
-          throw new IllegalArgumentException();
-      if (workQueue == null || threadFactory == null || handler == null)
-          throw new NullPointerException();
-      this.acc = System.getSecurityManager() == null ?
-          null :
-      AccessController.getContext();
-      this.corePoolSize = corePoolSize;
-      this.maximumPoolSize = maximumPoolSize;
-      this.workQueue = workQueue;
-      this.keepAliveTime = unit.toNanos(keepAliveTime);
-      this.threadFactory = threadFactory;
-      this.handler = handler;
-  }
-  ```
+                                      new LinkedBlockingQueue<Runnable>());
+}
+
+public static ExecutorService newCachedThreadPool() {
+    return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+                                  60L, TimeUnit.SECONDS,
+                                  new SynchronousQueue<Runnable>());
+}
+
+// 可以发现 三大方法的本质都是：ThreadPoolExecutor()
+public ThreadPoolExecutor(int corePoolSize, // 核心线程池大小
+                          int maximumPoolSize, // 最大线程池大小
+                          long keepAliveTime, // 保持连接时间，超时了多少会释放资源
+                          TimeUnit unit,// 超时单位
+                          BlockingQueue<Runnable> workQueue, // 阻塞队列
+                          ThreadFactory threadFactory, // 线程工厂，创建线程的，一般不用懂
+                          RejectedExecutionHandler handler) { // 拒绝策略
+    if (corePoolSize < 0 ||
+        maximumPoolSize <= 0 ||
+        maximumPoolSize < corePoolSize ||
+        keepAliveTime < 0)
+        throw new IllegalArgumentException();
+    if (workQueue == null || threadFactory == null || handler == null)
+        throw new NullPointerException();
+    this.acc = System.getSecurityManager() == null ?
+        null :
+    AccessController.getContext();
+    this.corePoolSize = corePoolSize;
+    this.maximumPoolSize = maximumPoolSize;
+    this.workQueue = workQueue;
+    this.keepAliveTime = unit.toNanos(keepAliveTime);
+    this.threadFactory = threadFactory;
+    this.handler = handler;
+}
+```
 
 - ![image-20211023191527467](2_JUC.assets/image-20211023191527467.png)
 
@@ -1511,11 +1501,11 @@ public class UnsafeMap {
   public class ThreadPoolExecutorTest {
       public static void main(String[] args) {
           // 自定义线程池：工作中经常使用！
-          
+  
           // 如何定义最大线程数量？
           // 1. CPU密集型：电脑是几核就用几，可以保持CPU的效率最高
           // 2. IO 密集型：判断程序中十分消耗IO的线程，因为IO十分消耗资源，因此一般消耗IO线程的2倍即可
-          
+  
           // 获取CPU的核数
           int cpuNum = Runtime.getRuntime().availableProcessors();
           ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
@@ -1541,11 +1531,10 @@ public class UnsafeMap {
   
       }
   }
-  
   ```
-  
-- 小结：
 
+- 小结：
+  
   - 选择最大线程数：调优
     - CPU密集型
     - IO密集型
@@ -1567,7 +1556,7 @@ public class UnsafeMap {
   ```
 
 > Function函数型接口：
->
+> 
 > - 看源码！
 
 ```java
@@ -1591,11 +1580,10 @@ public class FunctionTest {
         System.out.println(function.apply("asdd"));
     }
 }
-
 ```
 
 > Predicate 断定型接口：
->
+> 
 > - 看源码
 
 ```java
@@ -1621,11 +1609,10 @@ public class PredicateTest {
 
     }
 }
-
 ```
 
 > Consumer 消费型接口：
->
+> 
 > - 看源码
 
 ```java
@@ -1650,11 +1637,10 @@ public class ConsumerTest {
         consumer.accept("xxxx");
     }
 }
-
 ```
 
 > Supplier 供给型接口
->
+> 
 > - 看源码
 
 ```java
@@ -1684,7 +1670,7 @@ public class SupllierTest {
 - 什么是Stream流式计算？
 
 - 大数据：存储+计算
-
+  
   - 存储：集合、MySQL
   - 计算：交给流来做即可
 
@@ -1729,44 +1715,44 @@ public class SupllierTest {
                       System.out.println(u);
                   });
       }
-  
-  
+  ```
+
   }
   class User{
       private int id;
       private int age;
       private String name;
-  
+
       public User(int id, int age, String name) {
           this.id = id;
           this.age = age;
           this.name = name;
       }
-  
+    
       public int getId() {
           return id;
       }
-  
+    
       public void setId(int id) {
           this.id = id;
       }
-  
+    
       public int getAge() {
           return age;
       }
-  
+    
       public void setAge(int age) {
           this.age = age;
       }
-  
+    
       public String getName() {
           return name;
       }
-  
+    
       public void setName(String name) {
           this.name = name;
       }
-  
+    
       @Override
       public String toString() {
           return "User{" +
@@ -1775,21 +1761,21 @@ public class SupllierTest {
                   ", name='" + name + '\'' +
                   '}';
       }
-  }
-  
-  ```
 
+  }
+
+```
 ## 14. ForkJoin
 
 - 建议自行百度or看别人的笔记（未完待续）
 
 - 什么是ForkJoin?
-  - ForJoin是在JDK1.7发布，并行执行任务！大数据量下：提高效率
-  - ![image-20211024094705108](2_JUC.assets/image-20211024094705108.png)
+- ForJoin是在JDK1.7发布，并行执行任务！大数据量下：提高效率
+- ![image-20211024094705108](2_JUC.assets/image-20211024094705108.png)
 - ForkJoin特点：
-  - 工作窃取
-  - 里面维护的都是双端队列
-  - ![image-20211024094832242](2_JUC.assets/image-20211024094832242.png)
+- 工作窃取
+- 里面维护的都是双端队列
+- ![image-20211024094832242](2_JUC.assets/image-20211024094832242.png)
 
 ## 15. 异步回调
 
@@ -1798,57 +1784,56 @@ public class SupllierTest {
 - 看源码+继承关系+代码示例
 
 - ```java
-  import java.util.concurrent.CompletableFuture;
-  import java.util.concurrent.ExecutionException;
-  import java.util.concurrent.TimeUnit;
-  
-  public class CompletableFutureTest {
-      /*
-      异步调用：CompletableFuture
-          主要就是：
-              异步执行
-              成功回调
-              失败回调
-       */
-      public static void main(String[] args) throws ExecutionException, InterruptedException {
-          // 没有返回值的runAsync异步回调
-  //        CompletableFuture<Void> voidCompletableFuture = CompletableFuture.runAsync(()->{
-  //            try {
-  //                TimeUnit.SECONDS.sleep(2);
-  //            } catch (InterruptedException e) {
-  //                e.printStackTrace();
-  //            }
-  //            System.out.println(Thread.currentThread().getName()+"这是一个没有返回值的异步调用任务");
-  //        });
-  //
-  //        System.out.println("main");
-  //        // 获取阻塞执行结果
-  //        voidCompletableFuture.get();
-  
-          // 有返回值的supplyAsync异步回调
-          // 类似与ajax，成功和失败的返回
-          CompletableFuture<Integer> integerCompletableFuture = CompletableFuture.supplyAsync(() -> {
-              System.out.println(Thread.currentThread().getName() + "这是一个有防护值的异步任务");
-              int i = 10 / 0;
-              return 1024;
-          });
-  
-          // 获取返回结果
-          Integer integer = integerCompletableFuture.whenComplete((t, u) -> { // 当任务完成时返回
-              System.out.println("t:" + t);// 正常的返回结果
-              System.out.println("u:" + u);// 错误信息
-          }).exceptionally((e) -> { // 当执行出错时也返回
-              System.out.println(e.getMessage());
-              return 233;// 可以获取错误的返回结果，类似于ajax的error code
-          }).get();
-          System.out.println(integer);
-  
-  
-      }
-  
-  }
-  
-  ```
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+
+public class CompletableFutureTest {
+    /*
+    异步调用：CompletableFuture
+        主要就是：
+            异步执行
+            成功回调
+            失败回调
+     */
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        // 没有返回值的runAsync异步回调
+//        CompletableFuture<Void> voidCompletableFuture = CompletableFuture.runAsync(()->{
+//            try {
+//                TimeUnit.SECONDS.sleep(2);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//            System.out.println(Thread.currentThread().getName()+"这是一个没有返回值的异步调用任务");
+//        });
+//
+//        System.out.println("main");
+//        // 获取阻塞执行结果
+//        voidCompletableFuture.get();
+
+        // 有返回值的supplyAsync异步回调
+        // 类似与ajax，成功和失败的返回
+        CompletableFuture<Integer> integerCompletableFuture = CompletableFuture.supplyAsync(() -> {
+            System.out.println(Thread.currentThread().getName() + "这是一个有防护值的异步任务");
+            int i = 10 / 0;
+            return 1024;
+        });
+
+        // 获取返回结果
+        Integer integer = integerCompletableFuture.whenComplete((t, u) -> { // 当任务完成时返回
+            System.out.println("t:" + t);// 正常的返回结果
+            System.out.println("u:" + u);// 错误信息
+        }).exceptionally((e) -> { // 当执行出错时也返回
+            System.out.println(e.getMessage());
+            return 233;// 可以获取错误的返回结果，类似于ajax的error code
+        }).get();
+        System.out.println(integer);
+
+
+    }
+
+}
+```
 
 ## 16. JMM
 
@@ -1857,18 +1842,21 @@ public class SupllierTest {
 - 别人的解释：https://www.cnblogs.com/null-qige/p/9481900.html
 
 - 什么是JMM？
-
+  
   - JMM即为JAVA 内存模型（java memory  model）。因为在不同的硬件生产商和不同的操作系统下，内存的访问逻辑有一定的差异，结果就是当你的代码在某个系统环境下运行良好，并且线程安全，但是换了个系统就出现各种问题。Java内存模型，就是为了屏蔽系统和硬件的差异，让一套代码在不同平台下能到达相同的访问结果。JMM从java 5开始的JSR-133发布后，已经成熟和完善起来。
 
 - 内存划分
-	- JMM规定了内存主要划分为主内存和工作内存两种。此处的主内存和工作内存跟JVM内存划分（堆、栈、方法区）是在不同的层次上进行的，如果非要对应起来，主内存对应的是Java堆中的对象实例部分，工作内存对应的是栈中的部分区域，从更底层的来说，主内存对应的是硬件的物理内存，工作内存对应的是寄存器和高速缓存。
-	-   ![img](2_JUC.assets/1102674-20180815143324915-2024156794.png)
-
-	- JVM在设计时候考虑到，如果JAVA线程每次读取和写入变量都直接操作主内存，对性能影响比较大，所以每条线程拥有各自的工作内存，工作内存中的变量是主内存中的一份拷贝，线程对变量的读取和写入，直接在工作内存中操作，而不能直接去操作主内存中的变量。但是这样就会出现一个问题，当一个线程修改了自己工作内存中变量，对其他线程是不可见的，会导致线程不安全的问题。因为JMM制定了一套标准来保证开发者在编写多线程程序的时候，能够控制什么时候内存会被同步给其他线程。
+  
+  - JMM规定了内存主要划分为主内存和工作内存两种。此处的主内存和工作内存跟JVM内存划分（堆、栈、方法区）是在不同的层次上进行的，如果非要对应起来，主内存对应的是Java堆中的对象实例部分，工作内存对应的是栈中的部分区域，从更底层的来说，主内存对应的是硬件的物理内存，工作内存对应的是寄存器和高速缓存。
+  
+  - ![img](2_JUC.assets/1102674-20180815143324915-2024156794.png)
+  
+  - JVM在设计时候考虑到，如果JAVA线程每次读取和写入变量都直接操作主内存，对性能影响比较大，所以每条线程拥有各自的工作内存，工作内存中的变量是主内存中的一份拷贝，线程对变量的读取和写入，直接在工作内存中操作，而不能直接去操作主内存中的变量。但是这样就会出现一个问题，当一个线程修改了自己工作内存中变量，对其他线程是不可见的，会导致线程不安全的问题。因为JMM制定了一套标准来保证开发者在编写多线程程序的时候，能够控制什么时候内存会被同步给其他线程。
 
 - 内存交互操作
-	- 内存交互操作有8种，虚拟机实现必须保证每一个操作都是原子的，不可在分的（对于double和long类型的变量来说，load、store、read和write操作在某些平台上允许例外）
-
+  
+  - 内存交互操作有8种，虚拟机实现必须保证每一个操作都是原子的，不可在分的（对于double和long类型的变量来说，load、store、read和write操作在某些平台上允许例外）
+  
   - - lock   （锁定）：作用于主内存的变量，把一个变量标识为线程独占状态
     
     - unlock （解锁）：作用于主内存的变量，它把一个处于锁定状态的变量释放出来，释放后的变量才可以被其他线程锁定
@@ -1878,12 +1866,13 @@ public class SupllierTest {
     - load   （载入）：作用于工作内存的变量，它把read操作从主存中变量放入工作内存中
     
     - use   （使用）：作用于工作内存中的变量，它把工作内存中的变量传输给执行引擎，每当虚拟机遇到一个需要使用到变量的值，就会使用到这个指令
-      
+    
     - assign （赋值）：作用于工作内存中的变量，它把一个从执行引擎中接受到的值放入工作内存的变量副本中
+    
     - store  （存储）：作用于主内存中的变量，它把一个从工作内存中一个变量的值传送到主内存中，以便后续的write使用
     
     - write 　（写入）：作用于主内存中的变量，它把store操作从工作内存中得到的变量的值放入主内存的变量中
-  
+
 - JMM对这八种指令的使用，制定了如下规则：
   
   - - 不允许read和load、store和write操作之一单独出现。即使用了read必须load，使用了store必须write
@@ -1896,24 +1885,27 @@ public class SupllierTest {
     - 对一个变量进行unlock操作之前，必须把此变量同步回主内存
 
 - Volatile是什么？
+  
   - 是Java虚拟机提供的**轻量级同步机制**
   - 特点：
     - 保证可见性
     - **不保证原子性**
     - 禁止指令重排
-  
+
 - 什么是JMM？
   
   - Java内存模型，不存在的东西，概念，约定
-  
+
 - **关于JMM的一些同步约定：**
+  
   - 线程解锁前：必须把共享变量**立刻**刷回主存
   - 线程加锁前：必须读取主存中的最新值到工作内存中！
   - 加锁和解锁是同一把锁
-  
+
 - 主要是：线程、工作内存、主内存中的约定！
 
 - 八种操作
+  
   - ![image-20211024104833285](2_JUC.assets/image-20211024104833285.png)
   - ![image-20211024105113586](2_JUC.assets/image-20211024105113586.png)
 
@@ -1942,7 +1934,6 @@ public class SupllierTest {
           System.out.println(num);
       }
   }
-  
   ```
 
 - ![image-20211024105847953](2_JUC.assets/image-20211024105847953.png)
@@ -1980,7 +1971,7 @@ public class SupllierTest {
   ```
 
 - > 不保证原子性
-
+  
   - 原子性：不可分割
 
 - ```java
@@ -2011,11 +2002,10 @@ public class SupllierTest {
           System.out.println(Thread.currentThread().getName()+"=>"+num);
       }
   }
-  
   ```
 
 - 如果不加lock和synchronized怎么保证原子性？
-
+  
   - num++不是原子性操作！
   - ![image-20211024125452256](2_JUC.assets/image-20211024125452256.png)
   - 使用原子类来保证原子性！
@@ -2052,45 +2042,44 @@ public class SupllierTest {
           System.out.println(Thread.currentThread().getName()+"=>"+num);
       }
   }
-  
   ```
 
 - 原子类为什么这么高级？
-
+  
   - 这些类的底层都直接和操作系统相关，十分高效，在内存种修改值！Unsafe类是一个很特殊的存在
 
 - > 禁止指令重排
 
 - 什么是指令重排？
-
+  
   - 你写的程序，计算机并不是按照你写的顺序去执行的！
-
+  
   - 源代码-》编译器优化的重排=》指令并行也有可能重排=》内存系统也会重排=》执行
-
+  
   - 处理器在处理指令重排的时候，需要考虑：数据之间的依赖性
-
+  
   - 否则容易出现以下结果：
-
+  
   - ```java
     // a,b,x,y默认都是0
-    // 线程A				线程B
-    // x=a				 y=b
-    // b=1				 a=2
+    // 线程A                线程B
+    // x=a                 y=b
+    // b=1                 a=2
     // 正常输出：x=0,y=0，但是由于指令重排，可能会出现
-    // 线程A				线程B
-    // b=1				 a=2
-    // x=a				 y=b
+    // 线程A                线程B
+    // b=1                 a=2
+    // x=a                 y=b
     // 指令重排导致诡异的结果：x=2,y=1
     ```
 
 - volatile怎么避免指令重排？
-
+  
   - 内存屏障==CPU指令的作用：
     - 保证特定操作的执行顺序
     - 保证某些变量的内存可见性
 
 - volatile在哪里用的多？
-
+  
   - 单例模式！
 
 ## 18.单例模式
@@ -2114,7 +2103,6 @@ public class SupllierTest {
           return HUNGRY;
       }
   }
-  
   ```
 
 - ```java
@@ -2189,14 +2177,13 @@ public class SupllierTest {
           }
       }
   }
-  
   ```
 
 - ```java
   public class Holder {
       // 静态内部类-单例模式
       private Holder(){
-          
+  
       }
       public static class InnerClass{
           private static final Holder HOLDER=new Holder();
@@ -2258,7 +2245,6 @@ public class SupllierTest {
   
       }
   }
-  
   ```
 
 - ```java
@@ -2267,7 +2253,7 @@ public class SupllierTest {
   
   public class LazyManRecf {
       // 懒汉式单例：使用时才创建
-  	
+  
       // 一共三层检测防止单例被反射破解
       private LazyManRecf(){
           synchronized (LazyMan.class){
@@ -2316,7 +2302,6 @@ public class SupllierTest {
   
       }
   }
-  
   ```
 
 - 再使用反射破解三层检测的懒汉式单例
@@ -2389,7 +2374,7 @@ public class SupllierTest {
   
       // 使用一个标志位来确保反射不会破解三层单例
       private static boolean xx = false;
-      
+  
       private LazyManRecf(){
           synchronized (LazyMan.class){
               if(xx==false){
@@ -2442,7 +2427,6 @@ public class SupllierTest {
   
       }
   }
-  
   ```
 
 - 再使用反射破坏三层检测+标志位的懒汉式单例
@@ -2518,7 +2502,6 @@ public class SupllierTest {
   
       }
   }
-  
   ```
 
 - 真正防止反射破解：使用枚举类！
@@ -2556,63 +2539,63 @@ public class SupllierTest {
           //至此，反射确实不能破坏枚举类型的单例模式！
           System.out.println(instance);
           System.out.println(instance2);
-  
-  
-      }
-  }
-  
   ```
 
+      }
+
+  }
+
+```
 ## 19. 深入理解CAS
 
 - 什么是CAS？
 
-  - Compare And Set
+- Compare And Set
 
 - 什么是unsafe类：
 
-  - Java可以通过这个类来操作内存！
+- Java可以通过这个类来操作内存！
 
-  - ![image-20211024143127372](2_JUC.assets/image-20211024143127372.png)
+- ![image-20211024143127372](2_JUC.assets/image-20211024143127372.png)
 
-  - ![image-20211024143424131](2_JUC.assets/image-20211024143424131.png)
+- ![image-20211024143424131](2_JUC.assets/image-20211024143424131.png)
 
-  - ![image-20211024143517953](2_JUC.assets/image-20211024143517953.png)
+- ![image-20211024143517953](2_JUC.assets/image-20211024143517953.png)
 
-  - ```java
-    import java.util.concurrent.atomic.AtomicInteger;
-    
-    public class CASTest1 {
-        // CAS :compareAndSet=》是CPU的并发原语
-        public static void main(String[] args) {
-            AtomicInteger atomicInteger = new AtomicInteger(2020);
-            //  public final boolean compareAndSet(int expect, int update)
-            // 期望，更新
-            // 如果是期望的值，则更新为更新的值，否则不更新！
-            System.out.println(atomicInteger.compareAndSet(2020, 2021));
-            System.out.println(atomicInteger.get());
-            
-            atomicInteger.getAndIncrement();
-            
-            // 此时修改失败
-            System.out.println(atomicInteger.compareAndSet(2020, 2021));
-            System.out.println(atomicInteger.get());
-        }
-    }
-    
-    ```
+- ```java
+  import java.util.concurrent.atomic.AtomicInteger;
+
+  public class CASTest1 {
+      // CAS :compareAndSet=》是CPU的并发原语
+      public static void main(String[] args) {
+          AtomicInteger atomicInteger = new AtomicInteger(2020);
+          //  public final boolean compareAndSet(int expect, int update)
+          // 期望，更新
+          // 如果是期望的值，则更新为更新的值，否则不更新！
+          System.out.println(atomicInteger.compareAndSet(2020, 2021));
+          System.out.println(atomicInteger.get());
+
+          atomicInteger.getAndIncrement();
+
+          // 此时修改失败
+          System.out.println(atomicInteger.compareAndSet(2020, 2021));
+          System.out.println(atomicInteger.get());
+      }
+  }
+
+  ```
 
 - CAS：
 
-  - 比较当前工作内存中的值和主内存中的值，
-    - 如果这个值是期望的，则执行操作
-    - 如果不是，则一直循环
+- 比较当前工作内存中的值和主内存中的值，
+  - 如果这个值是期望的，则执行操作
+  - 如果不是，则一直循环
 
 - 缺点：
 
-  - 循环会耗时
-  - 一次性只能保证一个共享变量的原子性
-  - 会存在ABA问题
+- 循环会耗时
+- 一次性只能保证一个共享变量的原子性
+- 会存在ABA问题
 
 - ABA问题？
 
@@ -2621,39 +2604,38 @@ public class SupllierTest {
 - ![image-20211024144636050](2_JUC.assets/image-20211024144636050.png)
 
 - ```java
-  import java.util.concurrent.atomic.AtomicInteger;
-  
-  public class CASTest2 {
-      // CAS :compareAndSet=》是CPU的并发原语
-      public static void main(String[] args) {
-          AtomicInteger atomicInteger = new AtomicInteger(2020);
-          // MySQL中如何解决：乐观锁！
-          // 期望，更新
-          // 如果是期望的值，则更新为更新的值，否则不更新！
-          // 捣乱的线程=====================
-          System.out.println(atomicInteger.compareAndSet(2020, 2021));
-          System.out.println(atomicInteger.get());
-          System.out.println(atomicInteger.compareAndSet(2021, 2020));
-          System.out.println(atomicInteger.get());
-  
-          // 期望的线程=====================
-          System.out.println(atomicInteger.compareAndSet(2020, 6666));
-          System.out.println(atomicInteger.get());
-      }
-  }
-  
-  ```
-  
-- 如何解决？
+import java.util.concurrent.atomic.AtomicInteger;
 
+public class CASTest2 {
+    // CAS :compareAndSet=》是CPU的并发原语
+    public static void main(String[] args) {
+        AtomicInteger atomicInteger = new AtomicInteger(2020);
+        // MySQL中如何解决：乐观锁！
+        // 期望，更新
+        // 如果是期望的值，则更新为更新的值，否则不更新！
+        // 捣乱的线程=====================
+        System.out.println(atomicInteger.compareAndSet(2020, 2021));
+        System.out.println(atomicInteger.get());
+        System.out.println(atomicInteger.compareAndSet(2021, 2020));
+        System.out.println(atomicInteger.get());
+
+        // 期望的线程=====================
+        System.out.println(atomicInteger.compareAndSet(2020, 6666));
+        System.out.println(atomicInteger.get());
+    }
+}
+```
+
+- 如何解决？
+  
   - 带版本号的原子操作 =》原子引用
 
 ## 20. 原子引用
 
 - 解决ABA问题
-  
+
 - 使用原子引用=》对应的思想：乐观锁
-  
+
 - ```java
   import java.util.concurrent.TimeUnit;
   import java.util.concurrent.atomic.AtomicInteger;
@@ -2683,8 +2665,8 @@ public class SupllierTest {
                       System.out.println("A：将2改为1成功？"+b1);
                   }
           ,"A").start();
-  
-  
+  ```
+
           new Thread(
                   ()->{
                       int stamp = integerAtomicStampedReference.getStamp();// 获得版本号
@@ -2695,13 +2677,13 @@ public class SupllierTest {
                   }
                   ,"B").start();
       }
-  }
-  
-  ```
 
+  }
+
+```
 - 注意：
-  - ![image-20211024145932374](2_JUC.assets/image-20211024145932374.png)
-  - Integer使用了对象缓存机制，默认范围是-128-127，推荐使用静态工厂方法valueOf来获取对象实例，而不是new，因为valueOf使用缓存，而new一定会创建新的对象分配内存空间
+- ![image-20211024145932374](2_JUC.assets/image-20211024145932374.png)
+- Integer使用了对象缓存机制，默认范围是-128-127，推荐使用静态工厂方法valueOf来获取对象实例，而不是new，因为valueOf使用缓存，而new一定会创建新的对象分配内存空间
 
 ## 21. 各种锁
 
@@ -2712,17 +2694,17 @@ public class SupllierTest {
 - 非公平锁：非常不公平，可以插队（默认都是非公平的。因为两个任务 3h 3s的处理）
 
 - ```java
-  // 看ReentrantLock()的源码
-  // 设置非公平锁
-  Lock lock = new ReentrantLock();
-  // 设置公平锁
-  Lock lock = new ReentrantLock(true);
-  ```
+// 看ReentrantLock()的源码
+// 设置非公平锁
+Lock lock = new ReentrantLock();
+// 设置公平锁
+Lock lock = new ReentrantLock(true);
+```
 
 ### 21.2 可重入锁
 
 - 可重入锁==递归锁
-
+  
   - 是指拿到了外面的锁之后，也就意味着拿到了里面的锁（自动获得 ）
 
 - 代码实例
@@ -2741,8 +2723,8 @@ public class SupllierTest {
           },"B").start();
       }
   }
-  
-  
+  ```
+
   class Phone1{
       public synchronized void sms(){
           System.out.println(Thread.currentThread().getName()+"sms");
@@ -2752,60 +2734,58 @@ public class SupllierTest {
           System.out.println(Thread.currentThread().getName()+"call");
       }
   }
-  
-  ```
 
+```
 - ```java
-  import java.util.concurrent.locks.Lock;
-  import java.util.concurrent.locks.ReentrantLock;
-  
-  // lock锁
-  public class ReentrantLockDemo2 {
-      public static void main(String[] args) {
-          Phone6 phone1 = new Phone6();
-          new Thread(()->{
-              phone1.sms();
-          },"A").start();
-  
-          new Thread(()->{
-              phone1.sms();
-          },"B").start();
-      }
-  }
-  
-  
-  class Phone6{
-      Lock lock =new ReentrantLock();
-      public  void sms(){
-          lock.lock(); // 细节问题：lock.lock()，lock.unlock();// lock必须配对，不然会存在死锁问题
-          lock.lock();
-          try{
-              System.out.println(Thread.currentThread().getName()+"sms");
-              call();
-          }catch (Exception e){
-              e.getMessage();
-          }finally {
-              lock.unlock();
-              lock.unlock();
-  
-          }
-  
-      }
-      public void call(){
-  
-          lock.lock();
-          try{
-              System.out.println(Thread.currentThread().getName()+"call");
-          }catch (Exception e){
-              e.getMessage();
-          }finally {
-              lock.unlock();
-          }
-  
-      }
-  }
-  
-  ```
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+// lock锁
+public class ReentrantLockDemo2 {
+    public static void main(String[] args) {
+        Phone6 phone1 = new Phone6();
+        new Thread(()->{
+            phone1.sms();
+        },"A").start();
+
+        new Thread(()->{
+            phone1.sms();
+        },"B").start();
+    }
+}
+
+
+class Phone6{
+    Lock lock =new ReentrantLock();
+    public  void sms(){
+        lock.lock(); // 细节问题：lock.lock()，lock.unlock();// lock必须配对，不然会存在死锁问题
+        lock.lock();
+        try{
+            System.out.println(Thread.currentThread().getName()+"sms");
+            call();
+        }catch (Exception e){
+            e.getMessage();
+        }finally {
+            lock.unlock();
+            lock.unlock();
+
+        }
+
+    }
+    public void call(){
+
+        lock.lock();
+        try{
+            System.out.println(Thread.currentThread().getName()+"call");
+        }catch (Exception e){
+            e.getMessage();
+        }finally {
+            lock.unlock();
+        }
+
+    }
+}
+```
 
 ### 21.3 自旋锁(SpinLock)
 
@@ -2890,63 +2870,60 @@ public class SupllierTest {
                       }
                   },"T2"
           ).start();
-  
-  
-      }
-  
-  }
-  
   ```
 
+      }
+
+  }
+
+```
 ### 21.4 死锁
 
 - 死锁是什么？
 
-  - 两者共同争取同一资源
+- 两者共同争取同一资源
 
 - ```java
-  import java.util.concurrent.TimeUnit;
-  
-  public class DeadLockTest {
-      public static void main(String[] args) {
-          String lockA = "lockA";
-          String lockB = "lockB";
-  
-          new Thread(new MyThread1(lockA,lockB),"A").start();
-          new Thread(new MyThread1(lockB,lockA),"B").start();
-      }
-  }
-  
-  class MyThread1 implements Runnable{
-      private String lockA;
-      private String lockB;
-  
-      public MyThread1(String lockA, String lockB) {
-          this.lockA = lockA;
-          this.lockB = lockB;
-      }
-  
-      @Override
-      public void run() {
-          synchronized (lockA){
-              System.out.println(Thread.currentThread().getName()+"锁住了"+lockA+"继续想要获取"+lockB);
-              try {
-                  TimeUnit.SECONDS.sleep(1);
-              } catch (InterruptedException e) {
-                  e.printStackTrace();
-              }
-              synchronized (lockB){
-                  System.out.println(Thread.currentThread().getName()+"锁住了"+lockB);
-  
-              }
-          }
-      }
-  }
-  
-  ```
+import java.util.concurrent.TimeUnit;
+
+public class DeadLockTest {
+    public static void main(String[] args) {
+        String lockA = "lockA";
+        String lockB = "lockB";
+
+        new Thread(new MyThread1(lockA,lockB),"A").start();
+        new Thread(new MyThread1(lockB,lockA),"B").start();
+    }
+}
+
+class MyThread1 implements Runnable{
+    private String lockA;
+    private String lockB;
+
+    public MyThread1(String lockA, String lockB) {
+        this.lockA = lockA;
+        this.lockB = lockB;
+    }
+
+    @Override
+    public void run() {
+        synchronized (lockA){
+            System.out.println(Thread.currentThread().getName()+"锁住了"+lockA+"继续想要获取"+lockB);
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            synchronized (lockB){
+                System.out.println(Thread.currentThread().getName()+"锁住了"+lockB);
+
+            }
+        }
+    }
+}
+```
 
 - 如何解决死锁？
-
+  
   - 使用 jps -l 定位进程ID
   - 使用 jstack 进程ID 打印堆栈信息，找到死锁问题
-
