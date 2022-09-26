@@ -94,7 +94,6 @@
             this.elementData = EMPTY_ELEMENTDATA;
         }
     }
-
 ```
 
 - **以无参数构造方法创建 `ArrayList` 时，实际上初始化赋值的是一个空数组。当真正对数组进行添加元素操作时，才真正分配容量。即向数组中添加第一个元素时，数组容量扩为 10。**
@@ -289,7 +288,7 @@ public class ArrayscopyOfTest {
 
     /**
     如有必要，增加此 ArrayList 实例的容量，以确保它至少可以容纳由minimum capacity参数指定的元素数。
-    
+
      *
      * @param   minCapacity   所需的最小容量
      */
@@ -362,34 +361,34 @@ public class EnsureCapacityTest {
 ## 6. HashMap、HashSet区别
 
 - `HashSet` 底层就是基于 `HashMap` 实现的。（`HashSet` 的源码非常非常少，因为除了 `clone()`、`writeObject()`、`readObject()`是 `HashSet` 自己不得不实现之外，其他方法都是直接调用 `HashMap` 中的方法。
-
-  | `HashMap`                              | `HashSet`                                                    |
-  | -------------------------------------- | ------------------------------------------------------------ |
-  | 实现了 `Map` 接口                      | 实现 `Set` 接口                                              |
-  | 存储键值对                             | 仅存储对象                                                   |
-  | 调用 `put()`向 map 中添加元素          | 调用 `add()`方法向 `Set` 中添加元素                          |
+  
+  | `HashMap`                       | `HashSet`                                                                           |
+  | ------------------------------- | ----------------------------------------------------------------------------------- |
+  | 实现了 `Map` 接口                    | 实现 `Set` 接口                                                                         |
+  | 存储键值对                           | 仅存储对象                                                                               |
+  | 调用 `put()`向 map 中添加元素           | 调用 `add()`方法向 `Set` 中添加元素                                                           |
   | `HashMap` 使用键（Key）计算 `hashcode` | `HashSet` 使用成员对象来计算 `hashcode` 值，对于两个对象来说 `hashcode` 可能相同，所以` equals()`方法用来判断对象的相等性 |
 
 ## 7. HashSet如何检查重复
 
 - 当把对象add进入HashSet时：
-
+  
   - HashSet先计算对象的hashcode值来判断对象加入的位置，同时也会与其他加入的对象的hashcode对比
     - 如果没有相等的hashcode：HashSet就会认为该对象没有重复出现，可以放入对应的位置
     - 如果有相等的hashcode，就会调用equals()方法来检查hashcode相等的对象是否真的相同
       - 如果两者对象相同，则不会让其add操作成功
 
 - hashCode()和equals()：
-
+  
   - 如果两个对象相等，则hashcode一定是相同的
   - 两个对象相等，则equals()返回ture;
   - 两个对象的hashcode相等，但是其内容不一定相等
   - 因此一个类的equals()方法被覆盖过，则hashCode()方法也要被覆盖
 
 - 为什么equals()方法被覆盖，hahsCode()方法也要被覆盖？
-
+  
   - 因为即使两个对象的内容相等(equals为ture)，但是因为没有重写hahsCode()方法，所以Hash Set是调用类继承的Object的hashCode()方法，导致两个对象内容相同的对象有不同的hashCode()，进而导致相同对象都可以插入到HashSet中
-
+  
   - ```java
     import java.util.HashSet;
     
@@ -424,7 +423,7 @@ public class EnsureCapacityTest {
     ```
 
 - ==和equals()：
-
+  
   - 对于基本数据类型来说：
     - ==是比较值是否相等
   - 对于引用类型来说：
@@ -438,7 +437,7 @@ public class EnsureCapacityTest {
 ### 8.1 JDK1.8之前
 
 - JDK1.8之前：
-
+  
   - HashMap底层是数组+链表结合在一起使用（链表散列）
     - HashMap通过key的hashCode经过扰动函数处理=》获取hash值
     - 再通过(n-1)&hash判断当前元素的存放位置(其中n是数组长度)
@@ -482,18 +481,18 @@ public class EnsureCapacityTest {
 ## 9. HashMap的长度为什么都是2的幂次方
 
 - 为什么？
-
+  
   - 为了能让 HashMap 存取高效，尽量较少碰撞，也就是要尽量把数据分配均匀。
   - Hash  值的范围值-2147483648到2147483647，前后加起来大概40亿的映射空间，只要哈希函数映射得比较均匀松散，一般应用是很难出现碰撞的。
   - 但问题是一个40亿长度的数组，内存是放不下的。所以这个散列值是不能直接拿来用的。用之前还要先做对数组的长度取模运算，得到的余数才能用来要存放的位置也就是对应的数组下标。这个数组下标的计算方法是“ `(n - 1) & hash`”。（n代表数组长度）。这也就解释了 HashMap 的长度为什么是2的幂次方。
 
 - 如何实现？为什么不直接hash%n?
-
+  
   - 取余(%)操作中如果除数是2的幂次 等价于 hash&(n-1)，其中n是数组长度，并且为2的幂次
   - 并且相对于%，&操作能够提高运算效率
 
 - 再次解释为什么要是2的幂次方？
-
+  
   - ```java
     // JDK1.8 源码
         static final int hash(Object key) {
@@ -504,19 +503,19 @@ public class EnsureCapacityTest {
           return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
       }
     ```
-
+  
   - hash能够让key散列的更加均匀，随机化
-
+  
   - hash&(n-1)可以恰好得到底为掩码，导致hash的低位才会参与计算索引，高位都被底位掩码给截取了，如果传进去的实体的hashCode设计的不好，低位基本差不多的话那么hash碰撞就会大概率的发生。所有右移hash值的一半n-1位，把高位与低位异或下，尽可能的消除这种影响
-
+  
   - 总结：
-
+    
     - 减少哈希冲突
     - 加快哈希计算
     - 完美扩容转移：在扩容时，利用扩容后的大小也是2的倍数，将已经产生hash碰撞的元素完美的转移到新的table中去，这种方法完美的避免了再次去进行哈希碰撞，仅只用了O（n）的时间复杂度，就将数据完成了转移
 
 - 如何保证大小是2的幂次方？
-
+  
   - 在初始化的时候，会调用tableSizeFor()来确保数组大小是2的幂次方
 
 ## 10. HashMap多线程的问题
@@ -595,4 +594,3 @@ public class EnsureCapacityTest {
 - 如果只需要存放元素：Collection接口下的集合
   - 如果要保证元素唯一：Set接口下的集合：TreeSet、HashSet
   - 如果不需要保证元素唯一：List接口下的集合：ArrayList、LinkedList
-

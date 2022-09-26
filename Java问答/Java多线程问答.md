@@ -816,15 +816,20 @@
   然后Unsafe保证对这个value值的操作都是CAS操作。这样就保证了其原子性。
   */
   ```
-
+  
   /**
-
 * 比较obj的offset处内存位置中的值和期望的值，如果相同则更新。此更新是不可中断的。
+
 * 
+
 * @param obj 需要更新的对象
+
 * @param offset obj中整型field的偏移量
+
 * @param expect 希望field中存在的值
+
 * @param update 如果期望值expect与field的当前值相同，设置filed的值为这个新值
+
 * @return 如果field的值被更改返回true
   */
   public native boolean compareAndSet(Object obj, long offset, int expect, int update);

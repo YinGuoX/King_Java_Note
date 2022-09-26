@@ -7,7 +7,7 @@
 ### 1.1 为什么要使用Nosql
 
 > 1.单机MySQL的时代
->
+> 
 > - 90年代，一个基本的网站访问量一般不会太大，单个数据库完全足够
 
 - ![image-20211025092709836](1_Redis基础.assets/image-20211025092709836.png)
@@ -22,12 +22,14 @@
 - 网站80%的情况都是在读取数据，每次都要去查询数据库的话就十分的麻烦，因此希望减轻数据的压力，可以使用缓存来保证效率
 
 - ![image-20211025093356995](1_Redis基础.assets/image-20211025093356995.png)
+
 - 发展过程：
+  
   - 优化数据结构和索引-》文件缓存(I/O)=》Memcached(当时最热门的技术)
 
 > 3.分库分表+水平拆分(MySQL集群)
 
--   ![image-20211025093955709](1_Redis基础.assets/image-20211025093955709.png)
+- ![image-20211025093955709](1_Redis基础.assets/image-20211025093955709.png)
 - 数据库的本质：读+写
   - MyISAM：表锁=》十分影响效率，高并发下回出现严重的锁的问题
   - InnoDB：行数
@@ -50,19 +52,19 @@
 ### 1.2 什么是NoSQL?
 
 - NoSQL=Not Only SQL =>不仅仅是SQL
-
+  
   - 泛指非关系型数据库，随着web2.0互联网的诞生!传统的关系型数据库很难对付web2.0时代!
   - 尤其是超大规模的高并发的社区!暴露出来很多难以克服的问题，NoSQL在当今大数据环境下发展的十分迅速，Redis是发展最快的，而且是当下必须要掌握的一个技术
   - 很多的数据类型：用户的个人信息，社交网络，地理位置。这些数据类型的存储不需要一个固定的格式!不需要多余的操作就可以横向扩展的，如：Map<String,Object>使用键值对来控制!
 
 - NoSQL特点？
-
+  
   - 方便扩展：数据之间没有关系，很好拓展！
   - 大数据量高性能(Redis 一秒写8万，读取11万，NoSQL的缓存记录级，细粒度的缓存，性能高)
   - 数据类型多样，不需要事先设计数据库！随取随用！（如果是数据量十分大的表，很多人就无法设计了）
 
 - 传统的关系型数据库和NoSQL？
-
+  
   - ```xml
     传统的RDBMS
     - 结构化组织
@@ -73,7 +75,7 @@
     - 基础的事务
     -...
     ```
-
+  
   - ```xml
     NoSQL
     - 不仅仅是数据
@@ -86,7 +88,7 @@
     ```
 
 - 了解3V+3高？
-
+  
   - 大数据时代的3V:
     - 主要是描述问题的
     - 1.海量Volume
@@ -108,36 +110,35 @@
 
 - ```bash
   #1、商品的基本信息
-  	名称、价格、商家信息;
-  	关系型数据库就可以解决了! MysQL / oracle（淘宝早年就去IOE了! -王坚:推荐文章:阿里云的这群疯子:40分钟重要!)
-  	淘宝内部的MysQL不是大家用的MysQL
+      名称、价格、商家信息;
+      关系型数据库就可以解决了! MysQL / oracle（淘宝早年就去IOE了! -王坚:推荐文章:阿里云的这群疯子:40分钟重要!)
+      淘宝内部的MysQL不是大家用的MysQL
   #2、商品的描述、评论（文字比较多)
-  	文档型数据库中，MongoDB
+      文档型数据库中，MongoDB
   #3、图片
-  	分布式文件系统FastDFS
-  	-淘宝自己的 TFS
-  	- Google的GFS
-  	- Hadoop HDFS
-  	-阿里云的oss
+      分布式文件系统FastDFS
+      -淘宝自己的 TFS
+      - Google的GFS
+      - Hadoop HDFS
+      -阿里云的oss
   #4、商品的关键字(搜索)
-  	-搜索引擎 solr elasticsearch
-  	- Iserach: 多隆（多去了解一下这些技术大佬!)
+      -搜索引擎 solr elasticsearch
+      - Iserach: 多隆（多去了解一下这些技术大佬!)
   # 5、商品热门的波段信息
-  	-内存数据库
-  	- Redis Tair.Memache. . .
+      -内存数据库
+      - Redis Tair.Memache. . .
   #6、商品的交易,外部的支付接口
-  	-三方应用
-  
+      -三方应用
   ```
 
 - 大型互联网应用的问题：
-
+  
   - 数据类型太多了
   - 数据源繁多，经常重构
   - 数据要改造，大面积改造？
 
 - 解决问题：
-
+  
   - ![image-20211025104302121](1_Redis基础.assets/image-20211025104302121.png)
   - ![image-20211025104418311](1_Redis基础.assets/image-20211025104418311.png)
 
@@ -165,7 +166,7 @@
 
 - Redis是什么？
   - Redis ( Remote Dictionary Server )，即远程字典服务!
-  - 是一个开源的使用ANSl C语言编写、支持网络、可基于内存亦可持久化的日志型、Key-value数据库，并提供多种语言的API.
+  - 是一个开源的使用C语言编写、支持网络、可基于内存亦可持久化的日志型、Key-value数据库，并提供多种语言的API.
   - 区别的是redis会周期性的把更新的数据写入磁盘或者把修改操作写入追加的记录文件，并且在此基础上实现了master-slave(主从)同步。
   - 免费和开源!是当下最热门的NoSQL技术之一!也被人们称之为结构化数据库!
 - Redis能干什么？
@@ -185,13 +186,13 @@
 ### 2.1 安装
 
 - windows安装：建议看视频或者百度教程：https://www.bilibili.com/video/BV1S54y1R7SB?p=8&spm_id_from=pageDriver
-
+  
   - 下载、解压到环境目录即可
-
+  
   - 开启Redis，运行服务器
-
+  
   - 使用redis客户端，双击即可
-
+  
   - ```bash
     # 测试是否连接，返回PONG，已经连接到redis服务器
     ping 
@@ -201,31 +202,30 @@
     ```
 
 - linux安装：
-
+  
   - 官网下载安装包
-
+  
   - 解压Redis安装包，程序一般在/opt目录
-
+    
     - ```bash
       mv redis-6.2.6.tar.gz /opt
       tar -zxvf redis-6.2.6.tar.gz
-      
       ```
-
+  
   - 进入解压后的文件，可以看到redis.conf，配置文件
-
+  
   - 基本的环境安装
-
+    
     - ```bash
       yum install gcc-c++
       # 然后直接输入make或者make install ,完成之后可以redis文件夹下面就多了src目录
       make 
       ```
-
+  
   - redis的默认安装路径：/usr/local/bin
-
+  
   - 将redis配置文件拷贝到安装路径下
-
+    
     - ```bash
       # 在默认安装路径下新建一个文件夹
       mkdir kingconfig
@@ -233,29 +233,29 @@
       [root@izwz94aowfpx0xt7uw61tbz bin]# cp /opt/redis-6.2.6/redis.conf kingconfig
       # 以后就改这个配置文件即可
       ```
-
+  
   - redis默认不是后台启动的，要设置后台启动，需要修改配置文件
-
+    
     - ```bash
       vim redis.conf
       # 改为yes即可
       daemonize yes
       ```
-
+  
   - 启动redis
-
+    
     - ![image-20211025124025612](1_Redis基础.assets/image-20211025124025612.png)
     - ![image-20211025124114741](1_Redis基础.assets/image-20211025124114741.png)
     - ![image-20211025124215688](1_Redis基础.assets/image-20211025124215688.png)
-
+  
   - 查看redis进程是否开启
-
+    
     - ```bash
       ps -ef|greo redis
       ```
-
+  
   - 如何关闭redis服务:shutdown（关闭redis）然后exit即可
-
+    
     - ![image-20211025124454990](1_Redis基础.assets/image-20211025124454990.png)
 
 ### 2.2 性能测试
@@ -263,24 +263,23 @@
 - 使用redis安装后自带的redis-benchmark：压力测试工具
 
 - 使用：
-
+  
   - redis-benchmark 命令参数即可=》可以自行百度
-
+  
   - ```bash
     # 简单测试一下
     # 测试试: 100个并发连接100000请求
     redis-benchmark -h localhost -p 6379 -c 100 -n 100000
-    
     ```
 
 - 如何查看分析：
-
+  
   - ![image-20211025125247244](1_Redis基础.assets/image-20211025125247244.png)
 
 ### 2.3 基础知识
 
 - 基本使用
-
+  
   - ```bash
     # 默认有16个数据库,
     # 查看配置文件即可
@@ -310,13 +309,13 @@
     ```
 
 - 为什么Redis是单线程的？
-
+  
   - 官方：Redis是基于内存操作的，CPU不是Redis性能瓶颈，Redis的瓶颈是根据机器的内存和网络带宽，既然可以使用单线程来实现，就使用单线程了
 
 - Redis是C语言写的，官方提供的数据为100000+的QPS，完全不比同样是使用key-vale的Memecache差!
 
 - Redis为什么单线程还这么快?
-
+  
   - 误区1：高性能的服务器一定是多线程的?
   - 误区2：多线程一定比单线程效率高？=》多线程的上下文切换很消耗资源
   - 核心：Redis是将所有的数据全部放到内存中的，所以说使用单线程去操作效率就是最高的，对于内存系统来说，如果没有上下文切换效率就是最高的，多次读写都是在CPU上进行的，在内存情况下，这个就是最佳的方案
@@ -324,9 +323,9 @@
 ## 3. 五大数据类型
 
 - 看官方文档！
-- Redis 是一个开源（BSD许可）的，内存中的数据结构存储系统，它可以用作数据库、缓存和消息中间件。    	它支持多种类型的数据结构，如    	    [字符串（strings）](http://www.redis.cn/topics/data-types-intro.html#strings)，    [散列（hashes）](http://www.redis.cn/topics/data-types-intro.html#hashes)，    [列表（lists）](http://www.redis.cn/topics/data-types-intro.html#lists)，    [集合（sets）](http://www.redis.cn/topics/data-types-intro.html#sets)，    [有序集合（sorted sets）](http://www.redis.cn/topics/data-types-intro.html#sorted-sets) 与范围查询，    [bitmaps](http://www.redis.cn/topics/data-types-intro.html#bitmaps)，    [hyperloglogs](http://www.redis.cn/topics/data-types-intro.html#hyperloglogs) 和     [地理空间（geospatial）](http://www.redis.cn/commands/geoadd.html) 索引半径查询。     Redis 内置了    [复制（replication）](http://www.redis.cn/topics/replication.html)，[LUA脚本（Lua scripting）](http://www.redis.cn/commands/eval.html)，    [LRU驱动事件（LRU eviction）](http://www.redis.cn/topics/lru-cache.html)，[事务（transactions）](http://www.redis.cn/topics/transactions.html)    和不同级别的    [磁盘持久化（persistence）](http://www.redis.cn/topics/persistence.html)，    并通过    [Redis哨兵（Sentinel）](http://www.redis.cn/topics/sentinel.html)和自动    [分区（Cluster）](http://www.redis.cn/topics/cluster-tutorial.html)提供高可用性（high availability）。
+- Redis 是一个开源（BSD许可）的，内存中的数据结构存储系统，它可以用作数据库、缓存和消息中间件。        它支持多种类型的数据结构，如            [字符串（strings）](http://www.redis.cn/topics/data-types-intro.html#strings)，    [散列（hashes）](http://www.redis.cn/topics/data-types-intro.html#hashes)，    [列表（lists）](http://www.redis.cn/topics/data-types-intro.html#lists)，    [集合（sets）](http://www.redis.cn/topics/data-types-intro.html#sets)，    [有序集合（sorted sets）](http://www.redis.cn/topics/data-types-intro.html#sorted-sets) 与范围查询，    [bitmaps](http://www.redis.cn/topics/data-types-intro.html#bitmaps)，    [hyperloglogs](http://www.redis.cn/topics/data-types-intro.html#hyperloglogs) 和     [地理空间（geospatial）](http://www.redis.cn/commands/geoadd.html) 索引半径查询。     Redis 内置了    [复制（replication）](http://www.redis.cn/topics/replication.html)，[LUA脚本（Lua scripting）](http://www.redis.cn/commands/eval.html)，    [LRU驱动事件（LRU eviction）](http://www.redis.cn/topics/lru-cache.html)，[事务（transactions）](http://www.redis.cn/topics/transactions.html)    和不同级别的    [磁盘持久化（persistence）](http://www.redis.cn/topics/persistence.html)，    并通过    [Redis哨兵（Sentinel）](http://www.redis.cn/topics/sentinel.html)和自动    [分区（Cluster）](http://www.redis.cn/topics/cluster-tutorial.html)提供高可用性（high availability）。
 - 命令：看官方文档！
--  Key
+- Key
 
 ```bash
 127.0.0.1:6379> keys * # 查看所有key
@@ -1075,16 +1074,16 @@ OK
 - 建议看视频，或者直接百度
 
 - 启动的时候就需要指定这个conf！
-
+  
   - 配置文件：unit单位大小写不敏感
   - 可以包含其他配置文件
 
 - > 快照：
-
+  
   - 持久化，在规定的时间内，执行了多少次操作，则会持久化到文件 .rbd .aof中
-
+  
   - 因为redis是内存数据库，如果没有持久化，那么数据将会断点即失
-
+  
   - ```bash
     # 如果900s内，至少有1个key进行了修改，则进行持久化操作
     save 900 1
@@ -1108,18 +1107,18 @@ OK
     ```
 
 - > SECURITY 安全
-
+  
   - 可以设置登录密码，也可以在命令行中设置，默认没有密码
 
 - > APPEND ONLY 模式 aof配置
-
+  
   - ```bash
     appendonly on # 默认不开启 因为一般情况下是使用rdb方式持久化的，rdb一般都够用了！
     appendfilename "appendonly.aof" # 持久化文件的名字
     
     appendfsync everysec # 每秒执行一次sync，可能会丢失这1s的数据
-    # 			always：每次修改都会同步，消耗性能
-    # 			on ： 不同步
+    #             always：每次修改都会同步，消耗性能
+    #             on ： 不同步
     ```
 
 ## 9. Redis持久化
@@ -1141,18 +1140,18 @@ OK
 - 可以直接在配置文件中修改对应配置即可
 
 - 触发机制：
-
+  
   1. save的规则满足的情况下，会自动产生rdb文件
   2. 执行flushall命令，也会产生rdb文件
   3. 退出redis的时候，也会产生rdb文件
   4. 就是自动生成一个dump.rdb文件
 
 - 如何恢复rdb文件？
-
+  
   - 只需要将rdb文件放到redis启动目录就可以了，redis启动的时候会自动检查dump.rdb文件，恢复其中的数据
-
+  
   - 查看需要存放的位置：
-
+    
     - ```bash
       127.0.0.1:6379> config get dir
       1) "dir"
@@ -1160,12 +1159,12 @@ OK
       ```
 
 - 优点：
-
+  
   - 适合大规模的数据恢复
   - 对数据完整性要求不高，很合适
 
 - 缺点：
-
+  
   - 需要一定的时间间隔，因为进程操作！如果redis意外宕机了，这个最后一次修改数据就没有了
   - fork进程的时候，会占用一定的内存空间
 
@@ -1180,12 +1179,12 @@ OK
 - Aof保存的是appendonly.aof文件
 
 - 配置文件中的位置：APPEND ONLY FILE
-
+  
   - 默认是不开启的，需要手动开启
   - 重启后就生效了
 
 - 如果没有了dump.rdb文件，只有appendonly.aof文件，并且改文件被修改过，那么就不能正常启动redis：
-
+  
   - 需要修复这个aof文件，可以使用 redis-check-aof --fix 文件名 可以进行修复
 
 - ```bash
@@ -1194,8 +1193,8 @@ OK
   appendfilename "appendonly.aof" # 持久化文件的名字
   
   appendfsync everysec # 每秒执行一次sync，可能会丢失这1s的数据
-  # 			always：每次修改都会同步，消耗性能
-  # 			on ： 不同步
+  #             always：每次修改都会同步，消耗性能
+  #             on ： 不同步
   
   # 重写规则:如果aof文件大于64m，太大了，fork一个新的进程来对我们的文件进行读写
   auto-aof-rewrite-percentage 100
@@ -1203,38 +1202,37 @@ OK
   ```
 
 - 优点：
-
+  
   - 每一次修改都同步，文件的完整性会更好
   - 每秒同步一次，可能会丢失1秒的数据
   - 从不同步，效率最高
 
 - 缺点：
-
+  
   - Aof远大于rbd，修复速度也比rdb慢
   - Aof运行效率也比rdb慢，所以我们redis默认的配置就是rdb持久化
 
 - 扩展：
-
+  
   - ```bash
     # 1、RDB持久化方式能够在指定的时间间隔内对你的数据进行快照存储
     # 2、AOF持久化方式记录每次对服务器写的操作，当服务器重启的时候会重新执行这些命令来恢复原始的数据，AOF命令以Redis 协议追加保存每次写的操作到文件末尾，Redis还能对AOF文件进行后台重写，使得AOF文件的体积不至于过大。
     # 3、只做缓存，如果你只希望你的数据在服务器运行的时候存在，你也可以不使用任何持久化
     # 4、同时开启两种持久化方式
-    	# 在这种情况下，当redis重启的时候会优先载入AOF文件来恢复原始的数据，因为在通常情况下AOF文件保存的数据集要比RDB文件保存的数据集要完整。
-    	# RDB的数据不实时，同时使用两者时服务器重启也只会找AOF文件，那要不要只使用AOF呢?作者建议不要，因为RDB更适合用于备份数据库（AOF在不断变化不好备份），快速重启，而且不会有AOF可能潜在的Bug，留着作为一个万一的手段。
+        # 在这种情况下，当redis重启的时候会优先载入AOF文件来恢复原始的数据，因为在通常情况下AOF文件保存的数据集要比RDB文件保存的数据集要完整。
+        # RDB的数据不实时，同时使用两者时服务器重启也只会找AOF文件，那要不要只使用AOF呢?作者建议不要，因为RDB更适合用于备份数据库（AOF在不断变化不好备份），快速重启，而且不会有AOF可能潜在的Bug，留着作为一个万一的手段。
     ```
-
+  
   - ```bash
     # 因为RDB文件只用作后备用途，建议只在Slave上持久化RDB文件，而且只要15分钟备份一次就够了，只保留save 9001这条规则。
     # 如果Enable AOF，好处是在最恶劣情况下也只会丢失不超过两秒数据，启动脚本较简单只load自己的AOF文件就可以了，代价一是带来了持续的IO，二是AOF rewrite 的最后将rewrite过程中产生的新数据写到新文件造成的阻塞几乎是不可避免的。只要硬盘许可，应该尽量减少AOF rewrite的频率，AOF重写的基础大小默认值64M太小了，可以设到5G以上，默认超过原大小100%大小重写可以改到适当的数值。
     # 如果不Enable AOF，仅靠Master-Slave Repllcation 实现高可用性也可以，能省掉一大笔IO，也减少了rewrite时带来的系统波动。代价是如果Master/Slave同时倒掉，会丢失十几分钟的数据，启动脚本也要比较两个Master/Slave 中的 RDB文件，载入较新的那个，微博就是这种架构。
-    
     ```
 
 ## 10. Redis发布订阅
 
 - 是什么？pub/sub
-
+  
   - 一种消息通信模式：发布者发布消息，订阅者接收消息
 
 - Redis客户端可以订阅任意数量的频道
@@ -1252,7 +1250,7 @@ OK
   3) (integer) 1
   # 等待推送的消息
   1) "message" # 消息
-  2) "wsd"	# 那个频道的消息
+  2) "wsd"    # 那个频道的消息
   3) "helloworld" # 内容
   1) "message"
   2) "wsd"
@@ -1269,13 +1267,13 @@ OK
   ```
 
 - 原理：
-
+  
   - Redis是使用C实现的，通过分析Redis 源码里的 pubsub.c文件，了解发布和订阅机制的底层实现，籍此加深对Redis的理解。Redis 通过PUBLISH、SUBSCRIBE 和PSUBSCRIBE等命令实现发布和订阅功能。
   - 通过SUBSCRIBE命令订阅某频道后，redis-server里维护了一个字典，字典的键就是一个个channel!，而字典的值则是一个链表，链表中保存了所有订阅这个channel的客户端。SUBSCRIBE命令的关键，就是将客户端添加到给定channel 的订阅链表中。通过PUBLISH命令向订阅者发送消息，redis-server会使用给定的频道作为键，在它所维护的channel字典中查找记录了订阅这个频道的所有客户端的链表，遍历这个链表，将消息发布给所有订阅者。
   - Pub/Sub从字面上理解就是发布( Publish )与订阅( Subscribe )，在Redis中，你可以设定对某一个key值进行消息发布及消息订阅，当一个key值上进行了消息发布后，所有订阅它的客户端都会收到相应的消息。这一功能最明显的用法就是用作实时消息系统，比如普通的即时聊天，群聊等功能。
-  
-- 应用：
 
+- 应用：
+  
   - 实时消息系统
   - 群聊天室
   - 订阅、关注系统
@@ -1284,7 +1282,7 @@ OK
 ## 11. Redis主从复制
 
 - 是什么？
-
+  
   - 主从复制，是指将一台Redis服务器的数据，复制到其他的Redis服务器。前者称为主节点(masterleader)，后者称为从节点(slave/follower);**数据的复制是单向的**，只能由主节点到从节点。Master以写为主，Slave 以读为主。
   - 默认情况下，每台Redis服务器都是主节点;且一个主节点可以有多个从节点(或没有从节点)，但一个从节点只能有一个主节点。
   - 一般至少要求三台！一主二从
@@ -1292,7 +1290,7 @@ OK
 - ![image-20211026130953988](1_Redis基础.assets/image-20211026130953988.png)
 
 - 主从复制的作用主要包括︰
-
+  
   - 读写分离！因为80%都是读操作，减缓服务器的压力
   - 数据冗余：主从复制实现了数据的热备份，是持久化之外一种数据冗余方式。
   - 故障恢复：当主节点出现问题时，可以由从节点提供服务，实现快速的故障恢复;实际上是一种服务的冗余。
@@ -1300,7 +1298,7 @@ OK
   - 高可用基石：除了上述作用以外，主从复制还是哨兵和集群能够实施的基础，因此说主从复制是Redis高可用的基础。
 
 - 一般来说，要将Redis运用于工程项目中，只使用一台Redis是万万不能的，原因如下:
-
+  
   - 从结构上，单个Redis服务器会发生单点故障，并且一台服务器需要处理所有的请求负载，压力较大;
   - 从容量上，单个Redis服务器内存容量有限，就算一台Redis服务器内存容量为256G，也不能将所有内存用作Redis存储内存，一般来说，**单台Redis最大使用内存不应该超过20G。**
   - 如：电商网站上的商品，一般都是一次上传，无数次浏览的，说专业点也就是"多读少写"。对于这种场景，一般需要使用三台以上的redis服务器，实现主从复制，读写分离，保证....
@@ -1356,10 +1354,9 @@ OK
   root     31140     1  0 13:26 ?        00:00:00 redis-server 127.0.0.1:6380
   root     31170     1  0 13:26 ?        00:00:00 redis-server 127.0.0.1:6381
   root     31277 27911  0 13:26 pts/2    00:00:00 grep --color=auto redis
-  
-  
   ```
 
+```
 ### 11.1 一主二从
 
 - 默认情况下，每一台Redis服务器都是主节点
@@ -1367,72 +1364,74 @@ OK
 - 一般配置从机即可！认老大
 
 - ```bash
-  # 查看复制信息，多开几个session或者远程连接不同的服务器即可
-  
-  127.0.0.1:6379> info replication
-  # Replication
-  role:master
-  connected_slaves:0
-  master_failover_state:no-failover
-  master_replid:2ca50f9765a07e28920b6ca4b657737f18b9be5e
-  master_replid2:0000000000000000000000000000000000000000
-  master_repl_offset:0
-  second_repl_offset:-1
-  repl_backlog_active:0
-  repl_backlog_size:1048576
-  repl_backlog_first_byte_offset:0
-  repl_backlog_histlen:0
-  127.0.0.1:6379>
-  
-  
-  [root@izwz94aowfpx0xt7uw61tbz bin]# redis-cli -p 6380
-  127.0.0.1:6380> ping
-  PONG
-  127.0.0.1:6380> info replication
-  # Replication
-  role:master
-  connected_slaves:0
-  master_failover_state:no-failover
-  master_replid:6b78d9cb86ae75c3c4a916acb4434a240dc6fd90
-  master_replid2:0000000000000000000000000000000000000000
-  master_repl_offset:0
-  second_repl_offset:-1
-  repl_backlog_active:0
-  repl_backlog_size:1048576
-  repl_backlog_first_byte_offset:0
-  repl_backlog_histlen:0
-  127.0.0.1:6380>
-  
-  
-  127.0.0.1:6381> info replication
-  # Replication
-  role:master
-  connected_slaves:0
-  master_failover_state:no-failover
-  master_replid:35f156b2207116fbb54a1d2153b6beddc7b6688a
-  master_replid2:0000000000000000000000000000000000000000
-  master_repl_offset:0
-  second_repl_offset:-1
-  repl_backlog_active:0
-  repl_backlog_size:1048576
-  repl_backlog_first_byte_offset:0
-  repl_backlog_histlen:0
-  127.0.0.1:6381>
-  
-  ```
+# 查看复制信息，多开几个session或者远程连接不同的服务器即可
+
+127.0.0.1:6379> info replication
+# Replication
+role:master
+connected_slaves:0
+master_failover_state:no-failover
+master_replid:2ca50f9765a07e28920b6ca4b657737f18b9be5e
+master_replid2:0000000000000000000000000000000000000000
+master_repl_offset:0
+second_repl_offset:-1
+repl_backlog_active:0
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:0
+repl_backlog_histlen:0
+127.0.0.1:6379>
+
+
+[root@izwz94aowfpx0xt7uw61tbz bin]# redis-cli -p 6380
+127.0.0.1:6380> ping
+PONG
+127.0.0.1:6380> info replication
+# Replication
+role:master
+connected_slaves:0
+master_failover_state:no-failover
+master_replid:6b78d9cb86ae75c3c4a916acb4434a240dc6fd90
+master_replid2:0000000000000000000000000000000000000000
+master_repl_offset:0
+second_repl_offset:-1
+repl_backlog_active:0
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:0
+repl_backlog_histlen:0
+127.0.0.1:6380>
+
+
+127.0.0.1:6381> info replication
+# Replication
+role:master
+connected_slaves:0
+master_failover_state:no-failover
+master_replid:35f156b2207116fbb54a1d2153b6beddc7b6688a
+master_replid2:0000000000000000000000000000000000000000
+master_repl_offset:0
+second_repl_offset:-1
+repl_backlog_active:0
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:0
+repl_backlog_histlen:0
+127.0.0.1:6381>
+```
 
 - ```bash
   # 开始配置主从复制：认老大
   127.0.0.1:6380> SLAVEOF 127.0.0.1 6379
   OK
-  
+  ```
   
   127.0.0.1:6381> SLAVEOF 127.0.0.1 6379
   OK
-  
-  # 此时再次查看复制信息:
+
+# 此时再次查看复制信息:
+
   127.0.0.1:6379> info replication
-  # Replication
+
+# Replication
+
   role:master
   connected_slaves:2
   slave0:ip=127.0.0.1,port=6380,state=online,offset=70,lag=0
@@ -1446,10 +1445,11 @@ OK
   repl_backlog_size:1048576
   repl_backlog_first_byte_offset:1
   repl_backlog_histlen:70
-  
-  
+
   127.0.0.1:6380> info replication
-  # Replication
+
+# Replication
+
   role:slave
   master_host:127.0.0.1
   master_port:6379
@@ -1471,23 +1471,24 @@ OK
   repl_backlog_size:1048576
   repl_backlog_first_byte_offset:1
   repl_backlog_histlen:56
+
   ```
 
 - 真实的主从复制应该是在配置文件中配置，这样的话就是永久的，我们这里使用的是命令行的方式，是暂时的
 
 - **细节：**
-
+  
   - 主机可以写可以读，从机只能读！
   - 主机中所有的信息和数据，都会自动被从机保存
 
 - **测试：**
-
+  
   - 主机断开连接。从机依旧连接到主机，只是没有写操作了
   - 此时如果主机回来了，并且写入数据，此时从机依旧可以直接获取到主机写的信息
   - 如果是使用了命令行的方式来配置从机，从机重启后就会变为主机。但是只要又变成了对应主机的从机，立马就会从主机中同步数据，获取值。
 
 - 复制原理：
-
+  
   - Slave启动成功连接到Master后会发生一个sync同步命令
   - Master接到命令，启动后台的存盘进程，同时收集所有接收到的用于修改数据集命令，在后台进程执行完毕之后，**master将传送整个数据文件到slave，并完成一次完全同步。（全量复制）**
   - 全量复制︰而slave服务在接收到数据库文件数据后，将其存盘并加载到内存中。
@@ -1495,14 +1496,14 @@ OK
   - 但是只要是重新连接master，一次完全同步（全量复制）将被自动执行，确保我们的数据一定会在从机中看到
 
 - 层层链路：
-
+  
   - 之前的Master和Slave是一个M连接两个S
   - 如果改为：M-》S，M-》S：就是中间这个服务器即当上一个节点的从机，也是下一个节点的主机，此时info replication打印发现仍然是从机，不能写入，但是仍然可以完成主从复制
 
 - 问题：如果主机宕机了，没有老大了，岂不是不能写了？
-
+  
   - 没有哨兵模式下，一般是手动从从机中选择一个主机
-
+  
   - ```bash
     # 使用以下命令，可以将该从机设置为一个主机，并且连接剩余的从机
     slaveof no one
@@ -1522,12 +1523,12 @@ OK
 - ![image-20211026140432512](1_Redis基础.assets/image-20211026140432512.png)
 
 - 哨兵的作用：
-
+  
   - 通过发送命令，让Redis服务器返回监控其运行状态，包括主服务器和从服务器,
   - 当哨兵监测到master宕机，会自动将slave切换成master，然后通过发布订阅模式通知其他的从服务器，修改配置文件，让它们切换主机。
 
 - 问题：哨兵宕机了怎么办？？？
-
+  
   - 采用多哨兵模式
   - ![image-20211026140709716](1_Redis基础.assets/image-20211026140709716.png)
 
@@ -1536,7 +1537,7 @@ OK
 - 当后面的哨兵也检测到主服务器不可用，并且数量达到一定值时，那么哨兵之间就会进行一次投票，投票的结果由一个哨兵发起，进行**fail over[故障转移]**操作。切换成功后，就会通过发布订阅模式，让各个哨兵把自己监控的从服务器实现切换主机，这个过程称为**客观下线**。
 
 - 测试：
-
+  
   - ```bash
     # 目前的状态：一主(6379)二从(6380,6381)
     # 配置哨兵文件
@@ -1544,7 +1545,7 @@ OK
     # 输入：sentinel monitor 被监控的主机名称(自定义即可) host post 1 
     # 1代表主机宕机了，slave投票看让谁接替主机，谁的票数多，谁就会成为主机
     sentinel monitor myredis 127.0.0.1 6379 1
-    
+    ```
     
     [root@izwz94aowfpx0xt7uw61tbz kingconfig]# vim sentinel.conf
     [root@izwz94aowfpx0xt7uw61tbz kingconfig]# cd ..
@@ -1553,14 +1554,17 @@ OK
     6380.log  dump6380.rdb  dump.rdb      redis-benchmark  redis-check-rdb  redis-sentinel
     
     # 启动哨兵
+    
     [root@izwz94aowfpx0xt7uw61tbz bin]# redis-sentinel kingconfig/sentinel.conf
     16631:X 26 Oct 2021 14:15:11.407 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
     16631:X 26 Oct 2021 14:15:11.407 # Redis version=6.2.6, bits=64, commit=00000000, modified=0, pid=16631, just started
     16631:X 26 Oct 2021 14:15:11.408 # Configuration loaded
     16631:X 26 Oct 2021 14:15:11.408 * monotonic clock: POSIX clock_gettime
+    
                     _._
                _.-``__ ''-._
           _.-``    `.  `_.  ''-._           Redis 6.2.6 (00000000/0) 64 bit
+    
       .-`` .-```.  ```\/    _.,_ ''-._
      (    '      ,       .-`  | `,    )     Running in sentinel mode
      |`-._`-...-` __...-.``-._|'` _.-'|     Port: 26379
@@ -1572,6 +1576,7 @@ OK
      |`-._`-._    `-.__.-'    _.-'_.-'|
      |    `-._`-._        _.-'_.-'    |
       `-._    `-._`-.__.-'_.-'    _.-'
+    
           `-._    `-.__.-'    _.-'
               `-._        _.-'
                   `-.__.-'
@@ -1603,21 +1608,22 @@ OK
     16631:X 26 Oct 2021 14:17:11.798 * +slave slave 127.0.0.1:6379 127.0.0.1 6379 @ myredis 127.0.0.1 6381
     16631:X 26 Oct 2021 14:17:41.814 # +sdown slave 127.0.0.1:6379 127.0.0.1 6379 @ myredis 127.0.0.1 6381
     
+    ```
     
     ```
 
-  - 如果Master节点断开了，这个时候就会从从机中随机选择一个服务器，（投票算法，未完待续）
+- 如果Master节点断开了，这个时候就会从从机中随机选择一个服务器，（投票算法，未完待续）
 
-  - 如果Master节点断开又回来了，此时就不再是主机了，而是新投票出来的节点作为Master，而之前的Master作为从机
+- 如果Master节点断开又回来了，此时就不再是主机了，而是新投票出来的节点作为Master，而之前的Master作为从机
 
 - 优点：
-
+  
   - 哨兵集群，基于主从复制模式，所有的主从配置优点都有
   - 主从可以切换，故障可以转移，系统的可用性就会很好
   - 哨兵模式就是主从模式的设计，手动升级到自动，更加健壮
 
 - 缺点：
-
+  
   - Redis不好在线扩容，集群容量一旦到达上限，在线扩容就十分麻烦
   - 实现哨兵模式的配置其实是很麻烦的，里面很多选择：建议百度or官方！
 
@@ -1631,13 +1637,18 @@ OK
 - 可用想象为：广度，超多的不存在数据的查询
 
 - 概念：
+  
   - 缓存穿透的概念很简单，用户想要查询一个数据，发现redis内存数据库没有，也就是缓存没有命中，于是向持久层数据库查询。发现也没有，于是本次查询失败。当用户很多的时候，缓存都没有命中（秒杀），于是都去请求了持久层数据库。这会给持久层数据库造成很大的压力，这时候就相当于出现了缓存穿透。
+
 - 解决方案：
+  
   - 布隆过滤器：布隆过滤器是一种数据结构，对所有可能查询的参数以hash形式存储，在控制层先进行校验，不符合则丢弃，从而避免了对底层存储系统的查询压力
     - ![image-20211026143617016](1_Redis基础.assets/image-20211026143617016.png)
   - 缓存空对象：当存储层不命中后，即使返回的空对象也将其缓存起来，同时会设置一个过期时间，之后再访问这个数据将会从缓存中获取，保护了后端数据源
     - ![image-20211026143735697](1_Redis基础.assets/image-20211026143735697.png)
+
 - 仍然存在的问题：
+  
   - 如果空值能够被缓存起来，这就意味着缓存需要更多的空间存储更多的键，因为这当中可能会有很多的空值的键;
   - 即使对空值设置了过期时间，还是会存在缓存层和存储层的数据会有一段时间窗口的不一致，这对于需要保持一致性的业务会有影响。
 
@@ -1646,9 +1657,12 @@ OK
 - 可用想象为：深度，超多的存在数据的查询，缓存过期的一瞬间击穿缓存，到达数据库
 
 - 概念：
+  
   - 这里需要注意和缓存击穿的区别，缓存击穿，是指一个key非常热点，在不停的扛着大并发，大并发集中对这一个点进行访问，当这个key在失效的瞬间，持续的大并发就穿破缓存，直接请求数据库，就像在一个屏障上凿开了一个洞。
   - 当某个key在过期的瞬间，有大量的请求并发访问，这类数据一般是热点数据，由于缓存过期，会同时访问数据库来查询最新数据，并且回写缓存，会导使数据库瞬间压力过大。
+
 - 解决方案：
+  
   - 设置热点数据不过期：
     - 从缓存层面来看，没有设置过期时间，所以不会出现热点key过期后产生的问题。
   - 加互斥锁：

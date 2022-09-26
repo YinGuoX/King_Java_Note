@@ -7,11 +7,11 @@
 - MVCC：Multiversion Concurrency Control：多版本并发控制
 
 > [阿里数据库内核'2017/12'月报](https://link.segmentfault.com/?enc=feSeOm%2F4QfLGgSNEA1ExkQ%3D%3D.Evp4gT3omgf%2BZWOE6wjZ2PdAtUHNpAXp0x0IIGHpPWaidVkr9Y%2BaOkO4hmuunzh6)中对MVCC的解释是:
->
+> 
 > - **多版本控制**:  指的是一种提高并发的技术。最早的数据库系统，只有读读之间可以并发，读写，写读，写写都要阻塞。引入多版本之后，只有写写之间相互阻塞，其他三种操作都可以并行，这样大幅度提高了InnoDB的并发度。在内部实现中，与Postgres在数据行上实现多版本不同，InnoDB是在undolog中实现的，通过undolog可以找回数据的历史版本。找回的数据历史版本可以提供给用户读(按照隔离级别的定义，有些读请求只能看到比较老的数据版本)，也可以在回滚的时候覆盖数据页上的数据。在InnoDB内部中，会记录一个全局的活跃读写事务数组，其主要用来判断事务的可见性。
 
 > <高性能MySQL>中对MVCC的部分介绍：
->
+> 
 > - MySQL的大多数事务型存储引擎实现的其实都不是简单的行级锁。**基于提升并发性能的考虑**, 它们一般都同时实现了多版本并发控制(MVCC)。不仅是MySQL, 包括Oracle,PostgreSQL等其他数据库系统也都实现了MVCC, 但各自的实现机制不尽相同, 因为MVCC没有一个统一的实现标准。
 > - 可以认为MVCC是行级锁的一个变种，在很多情况下避免了加锁操作，使开销更低。虽然实现机制有所不同, 但大都实现了非阻塞的读操作，写操作也只锁定必要的行。
 > - MVCC的实现方式有多种, 典型的有乐观(optimistic)并发控制 和 悲观(pessimistic)并发控制。
@@ -37,20 +37,26 @@
 
 - PostgreSQL中的snapshot就是MySQL中的read view，快照的概念
 - read view 主要是用来做可见性判断的, 比较普遍的解释便是"本事务不可见的当前其他活跃事务"
--  对于read view快照的生成时机, 也非常关键, **正是因为生成时机的不同, 造成了RC,RR两种隔离级别的不同可见性**;
+- 对于read view快照的生成时机, 也非常关键, **正是因为生成时机的不同, 造成了RC,RR两种隔离级别的不同可见性**;
   - 在innodb中(默认repeatable read级别), 事务在begin/start transaction之后的第一条select读操作后, 会创建一个快照(read view), 将当前系统中活跃的其他事务记录记录起来;
   - 在innodb中(默认read committed级别), 事务中每条select语句都会创建一个快照(read view)
 
 ### 2.2 undo-log
 
 - 作用？
+  
   - Undo log是InnoDB MVCC事务特性的重要组成部分。当我们对记录做了变更操作时就会产生undo记录，Undo记录默认被记录到系统表空间(ibdata)中，但从5.6开始，也可以使用独立的Undo 表空间。
+
 - 使用？
+  
   - Undo记录中存储的是老版本数据，当一个旧的事务需要读取数据时，为了能读取到老版本的数据，需要顺着undo链找到满足其可见性的记录。当版本链很长时，通常可以认为这是个比较耗时的操作（例如bug#69812）。
 
 - 记录？
+  
   - 大多数对数据的变更操作包括INSERT/DELETE/UPDATE，其中INSERT操作在事务提交前只对当前事务可见，因此产生的Undo日志可以在事务提交后直接删除（谁会对刚插入的数据有可见性需求呢！！），而对于UPDATE/DELETE则需要维护多版本信息，在InnoDB里，UPDATE和DELETE操作产生的Undo日志被归成一类，即update_undo
+
 - 分类？
+  
   - 在回滚段中的undo logs分为: `insert undo log` 和 `update undo log`
   - insert undo log : 事务对insert新记录时产生的undolog, 只在事务回滚时需要, 并且在事务提交后就可以立即丢弃。
   - update undo log : 事务对记录进行delete和update操作时产生的undo log, 不仅在事务回滚时需要, 一致性读也需要，所以不能随便删除，只有当数据库所使用的快照中不涉及该日志记录，对应的回滚日志才会被purge线程删除。
@@ -84,18 +90,18 @@
 - MySQL的InnoDB存储引擎默认事务隔离级别是RR(可重复读), 是通过 "行排他锁+MVCC" 一起实现的, 不仅可以保证可重复读, 还可以**部分**防止幻读, 而非完全防止;
 
 - 为什么是部分防止幻读, 而不是完全防止?
-
+  
   - 效果: 在如果事务B在事务A执行中, insert了一条数据并提交, 事务A再次查询, 虽然读取的是undo中的旧版本数据(防止了部分幻读), 但是事务A中执行update或者delete都是可以成功的!!
   - 因为在innodb中的操作可以分为`当前读(current read)`和`快照读(snapshot read)`:
 
 - 快照读(snapshot read)
-
+  
   - ```mysql
     简单的select操作(当然不包括 select ... lock in share mode, select ... for update)
     ```
 
 - 当前读(current read)
-
+  
   - ```java
     select ... lock in share mode
     select ... for update
@@ -105,7 +111,7 @@
     ```
 
 - 在RR级别下:
-
+  
   - 快照读是通过MVVC(多版本控制)和undo log来实现的，
   - 当前读是通过加record lock(记录锁)和gap lock(间隙锁)来实现的。
   - innodb在快照读的情况下并没有真正的避免幻读, 但是在当前读的情况下避免了不可重复读和幻读!!!
@@ -128,6 +134,3 @@
   - Innodb的实现真算不上MVCC, 因为并没有实现核心的多版本共存, `undo log` 中的内容只是串行化的结果, 记录了多个事务的过程, 不属于多版本共存。但理想的MVCC是难以实现的, 当事务仅修改一行记录使用理想的MVCC模式是没有问题的, 可以通过比较版本号进行回滚, 但当事务影响到多行数据时, 理想的MVCC就无能为力了。
   - 比如, 如果事务A执行理想的MVCC, 修改Row1成功, 而修改Row2失败, 此时需要回滚Row1, 但因为Row1没有被锁定,  其数据可能又被事务B所修改, 如果此时回滚Row1的内容，则会破坏事务B的修改结果，导致事务B违反ACID。 这也正是所谓的 `第一类更新丢失` 的情况。
   - 也正是因为InnoDB使用的MVCC中结合了排他锁, 不是纯的MVCC, 所以第一类更新丢失是不会出现了, 一般说更新丢失都是指第二类丢失更新。
-
-
-

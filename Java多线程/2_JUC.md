@@ -1185,25 +1185,26 @@ public class UnsafeMap {
       }
   }
   ```
-
+  
   // 自定义缓存。模拟读写操作
   class MyChache{
+  
       private volatile Map<String,Object> map = new HashMap<>();
-
+      
       // 存，写
       public void put(String key,Object value){
           System.out.println(Thread.currentThread().getName()+"写入："+key);
           map.put(key,value);
           System.out.println(Thread.currentThread().getName()+"写入完毕");
       }
-    
+      
       // 取，读
       public void get(String key){
           System.out.println(Thread.currentThread().getName()+"读取"+key);
           Object o = map.get(key);
           System.out.println(Thread.currentThread().getName()+"读取完毕");
       }
-
+  
   }
 
 ```
@@ -1421,9 +1422,9 @@ public class BlockingQueueTest {
               service.shutdown();
           }
   ```
-
+  
       }
-
+  
   }
 
 ```
@@ -1716,43 +1717,44 @@ public class SupllierTest {
                   });
       }
   ```
-
+  
   }
   class User{
+  
       private int id;
       private int age;
       private String name;
-
+      
       public User(int id, int age, String name) {
           this.id = id;
           this.age = age;
           this.name = name;
       }
-    
+      
       public int getId() {
           return id;
       }
-    
+      
       public void setId(int id) {
           this.id = id;
       }
-    
+      
       public int getAge() {
           return age;
       }
-    
+      
       public void setAge(int age) {
           this.age = age;
       }
-    
+      
       public String getName() {
           return name;
       }
-    
+      
       public void setName(String name) {
           this.name = name;
       }
-    
+      
       @Override
       public String toString() {
           return "User{" +
@@ -1761,7 +1763,7 @@ public class SupllierTest {
                   ", name='" + name + '\'' +
                   '}';
       }
-
+  
   }
 
 ```
@@ -2540,9 +2542,9 @@ public class CompletableFutureTest {
           System.out.println(instance);
           System.out.println(instance2);
   ```
-
+  
       }
-
+  
   }
 
 ```
@@ -2582,19 +2584,21 @@ public class CompletableFutureTest {
           System.out.println(atomicInteger.get());
       }
   }
-
-  ```
+```
 
 - CAS：
 
 - 比较当前工作内存中的值和主内存中的值，
+  
   - 如果这个值是期望的，则执行操作
   - 如果不是，则一直循环
 
 - 缺点：
 
 - 循环会耗时
+
 - 一次性只能保证一个共享变量的原子性
+
 - 会存在ABA问题
 
 - ABA问题？
@@ -2604,7 +2608,8 @@ public class CompletableFutureTest {
 - ![image-20211024144636050](2_JUC.assets/image-20211024144636050.png)
 
 - ```java
-import java.util.concurrent.atomic.AtomicInteger;
+  import java.util.concurrent.atomic.AtomicInteger;
+  ```
 
 public class CASTest2 {
     // CAS :compareAndSet=》是CPU的并发原语
@@ -2623,11 +2628,12 @@ public class CASTest2 {
         System.out.println(atomicInteger.compareAndSet(2020, 6666));
         System.out.println(atomicInteger.get());
     }
-}
-```
 
+}
+
+```
 - 如何解决？
-  
+
   - 带版本号的原子操作 =》原子引用
 
 ## 20. 原子引用
@@ -2640,12 +2646,12 @@ public class CASTest2 {
   import java.util.concurrent.TimeUnit;
   import java.util.concurrent.atomic.AtomicInteger;
   import java.util.concurrent.atomic.AtomicStampedReference;
-  
+
   public class CASTest3 {
       // CAS :compareAndSet=》是CPU的并发原语
       public static void main(String[] args) {
           AtomicStampedReference<Integer> integerAtomicStampedReference = new AtomicStampedReference<>(1, 1);
-  
+
           new Thread(
                   ()->{
                    int stamp = integerAtomicStampedReference.getStamp();// 获得版本号
@@ -2655,17 +2661,17 @@ public class CASTest2 {
                       } catch (InterruptedException e) {
                           e.printStackTrace();
                       }
-  
+
                       boolean b = integerAtomicStampedReference.compareAndSet(1, 2, integerAtomicStampedReference.getStamp(), integerAtomicStampedReference.getStamp() + 1);
                       System.out.println("A：将1改为2成功？"+b);
                       System.out.println("A：将1改为2后，版本号为："+integerAtomicStampedReference.getStamp());
-  
+
                       boolean b1 = integerAtomicStampedReference.compareAndSet(2, 1, integerAtomicStampedReference.getStamp(), integerAtomicStampedReference.getStamp() + 1);
                       System.out.println("A：将2改为1后，版本号为："+integerAtomicStampedReference.getStamp());
                       System.out.println("A：将2改为1成功？"+b1);
                   }
           ,"A").start();
-  ```
+```
 
           new Thread(
                   ()->{
@@ -2724,8 +2730,9 @@ Lock lock = new ReentrantLock(true);
       }
   }
   ```
-
+  
   class Phone1{
+  
       public synchronized void sms(){
           System.out.println(Thread.currentThread().getName()+"sms");
           call();
@@ -2733,6 +2740,7 @@ Lock lock = new ReentrantLock(true);
       public synchronized void call(){
           System.out.println(Thread.currentThread().getName()+"call");
       }
+  
   }
 
 ```
@@ -2871,9 +2879,9 @@ class Phone6{
                   },"T2"
           ).start();
   ```
-
+  
       }
-
+  
   }
 
 ```

@@ -46,11 +46,16 @@ show table status like 'table_name';
 - 建议参考：https://www.cnblogs.com/geaozhang/p/6724393.html#MySQLyuzifuji
 
 - 什么是字符集？
+  
   - 一种从二进制编码到某类字符符号的映射
+
 - 什么是校对规则？
+  
   - 某种字符集下的排序规则
   - MySQL中每一种字符集都会对应一系列的校对规则
+
 - MySQL采用的是类似继承的方式指定字符集的默认值，每个数据库以及每张数据表都有自己的默认值，会逐层继承：
+  
   - 如：个库中所有表的默认字符集将是该数据库所指定的字符集（这些表在没有指定字符集的情况下，才会采用默认字符集）
 
 ## 4. 索引
@@ -181,16 +186,24 @@ show table status like 'table_name';
 - 可以参考：https://segmentfault.com/a/1190000006158186
 
 - 当MySQL单表记录数过大时，数据库的CRUD性能会明显下降，此时可以采取以下策略：
+
 - 限定数据的范围：
+  
   - 务必禁止不带任何限制数据范围条件的查询语句。比如：我们当用户在查询订单历史的时候，我们可以控制在一个月的范围内；
+
 - 读写分离：
+  
   - 经典的数据库拆分方案，主库负责写，从库负责读；
+
 - 垂直拆分：
+  
   - **根据数据库里面数据表的相关性进行拆分。** 例如，用户表中既有用户的登录信息又有用户的基本信息，可以将用户表拆分成两个单独的表，甚至放到单独的库做分库。
   - **简单来说垂直拆分是指数据表列的拆分，把一张列比较多的表拆分为多张表。**
   - **垂直拆分的优点：** 可以使得列数据变小，在查询时减少读取的Block数，减少I/O次数。此外，垂直分区可以简化表的结构，易于维护。
   - **垂直拆分的缺点：** 主键会出现冗余，需要管理冗余列，并会引起Join操作，可以通过在应用层进行Join来解决。此外，垂直分区会让事务变得更加复杂；
+
 - 水平拆分：
+  
   - **保持数据表结构不变，通过某种策略存储数据分片。这样每一片数据分散到不同的表或者库中，达到了分布式的目的。 水平拆分可以支撑非常大的数据量。**
   - 的行数超过200万行时，就会变慢，这时可以把一张的表的数据拆成多张表来存放。举个例子：我们可以将用户信息表拆分成多个用户信息表，这样就可以避免单一表数据量过大对性能造成影响。
   - 水平拆分可以支持非常大的数据量。需要注意的一点是：分表仅仅是解决了单一表数据过大的问题，但由于表的数据还是在同一台机器上，其实对于提升MySQL并发能力没有什么意义，所以 **水平拆分最好分库** 。
@@ -236,25 +249,35 @@ show table status like 'table_name';
 ### 11.2 redo log、undo log、bin log
 
 - 什么是redo log？
+  
   - 是物理文件，记录某个数据页上所做的修改，记录的是新数据的备份
   - 在事务执行过程中不断的写 redo log buffer，事务提交后将redo log buffer的数据写入到 redo log 文件
   - 在事务提交前，只要将redo log持久化即可，不需要将数据持久化，当系统崩溃的时候，虽然数据没有持久化，但是redo log已经持久化了，系统可以根据redo log的内容将所有数据恢复到最新的状态
+
 - 什么是undo log？
+  
   - 是物理文件，保存数据内容
   - undo log本身的操作都会记录到redo log，因此undo log可以不必立即持久化到磁盘中，因为undo log即便丢失了也可以通过redo log将其恢复
+
 - 什么是bin log？
+  
   - 归档日志，是属于逻辑日志，二进制的形式记录语句的原始逻辑，不记录真实数据，因此依靠bin log是没有crash-safe的能力的
   - bin log是**`追加写`的方式**，一份文件写到一定的大小就会更换下一份文件，**不会覆盖**
-- 因此插入记录时：
 
+- 因此插入记录时：
+  
   1. 向 undo log 插入一条 undo log记录
   2. 向 redo log 插入一条"插入undo log记录"的redo log记录
   3. 插入数据
   4. 向 redo log 插入一条 "insert" 的redo log 记录
+
 - redo log什么时候写回到磁盘？
+  
   - **回写到磁盘：** 当redo log满了，或者系统比较闲的时候，就会对redo log中的内容进行读取，对完整的trx_id对应的信息进行处理，如果数据页1在内存中还存在，直接将数据页1的信息回写到所在磁盘位置，如果不存在则将数据页1从磁盘中加载到内存，通过redo log中信息在内存中对数据页1进行修改，回写到磁盘。然后释放redo log中trx_id=10的空间区域。如果redo log中对应的trx_id没有end，则跳过不处理
   - redo文件是循环利用的，即文件写满了，就会从头开始写，重复利用空间。在很多资料上，Redo Log文件都会被画成一个环，实际上也确实如此
+
 - redo log和bin log的区别？
+  
   - 为什么会有这两份日志？
     - 一开始MySQL 里并没有 InnoDB 引擎。MySQL 自带的引擎是 MyISAM，但是 MyISAM 没有 crash-safe 的能力，binlog 日志只能用于**归档**。而 InnoDB 是另一个公司以插件形式引入 MySQL 的，既然只依靠 bin log 是没有 crash-safe 能力的，所以 InnoDB 使用另外一套日志系统——也就是 redo log 来实现 crash-safe 能力
   - 区别：
@@ -290,30 +313,42 @@ update t1 set c=c+1 where ID=2;
 ![image-20211102095834589](MySQL问答.assets/image-20211102095834589.png)
 
 - **Sync阶段**：对bin log的组提交，若完成后数据库崩溃，由于binlog已经记录了事务，重启后可以通过redo log继续进行事务提交
+  
   - binlog_group_commit_sync_delay=N：在等待N μs后，开始事务刷盘(图中Sync binlog)
   - binlog_group_commit_sync_no_delay_count=N：如果队列中的事务数达到N个，就忽视binlog_group_commit_sync_delay的设置，直接开始刷盘(图中Sync binlog)
+
 - **commit阶段**：将redo log中已经prepare的事务在引擎中提交。无需刷盘了，Flush的redo log已经够保证数据库崩溃的数据安全。完成最后的引擎提交使Sync可以进行下一组事务的处理
+
 - **直接写完redo log提交commit再写binlog的问题**：redo写完，事务提交，binlog还没写完，系统崩溃，此时可以通过redo恢复。但是由于binlog没写完，binlog里缺少sql语句，因此，之后备份日志的时候，存起来的binlog就缺少了这条语句，如果用binlog恢复临时库就会缺少更新，与原库数据不同
+
 - **先写完binlog提交再写redo log的问题**：binlog写完如果crash，redo没写完，所以崩溃之后这个事务无效，之后用binlog恢复的时候就多出了一个事务，恢复的依然与原数据库不同
+
 - **只有两个日志都写完之后才能提交事务**
+
 - 那么他们俩是如何配合进行**故障恢复**来保证crash-safe的呢？
+  
   - 它们有一个共同的事务ID字段TRX_ID。崩溃恢复的时候，会按顺序扫描 redo log
-    - 如果在prepare阶段就crash，则该事务是不会被持久化为prepare状态到	redo log的
+    - 如果在prepare阶段就crash，则该事务是不会被持久化为prepare状态到    redo log的
     - 如果碰到既有 prepare、又有 commit 的 redo log，就直接提交
     - 如果碰到只有 parepare、而没有 commit 的 redo log，就拿着 TRX_ID 去 binlog 找对应的事务，**由binlog决定提交还是回滚**，如果binlog中存在该事务则commit提交，否则回滚事务
+
 - **MySQL如何判断一个事务的bin log是否完整?**
+  
   - row 格式的 binlog，最后会有一个 XID event
   - statement 格式的 binlog，最后会有 COMMIT
+
 - **什么是crash safe？**
-
+  
   - CrashSafe指MySQL服务器宕机重启后，能够保证：`所有已经提交的事务的数据仍然存在。所有没有提交的事务的数据自动回滚`。
-- **如果只使用binlog可以实现crash safe嘛？**
 
+- **如果只使用binlog可以实现crash safe嘛？**
+  
   - 不能
   - 已经刷盘的数据，redolog会进行标记（chickpoint机制和LSN机制），而binlog没有这种机制，所以crash后binlog无法判断事务中哪些刷盘了哪些没刷盘，就没办法进行正常的恢复
   - 如果 binlog 写入成功了（write），数据还没写入磁盘（fsync），数据库异常崩溃，重启后主库没有这部分数据，而通过 binlog 同步的从库却有了这部分配置，**导致主从数据不一致**
-- **如果只使用redolog可以实现crash safe嘛？**
 
+- **如果只使用redolog可以实现crash safe嘛？**
+  
   - 可以的，但是bin log有着redo log无法替代的功能：`归档`(因为redo log会循环写，日志历史没法保留)，`高可用系统的实现`(MySQL集群基于binlog的复制)，因为历史原因，mysql系统很多方面都依赖于binlog，是mysql一开始就有的功能，所以没有办法去替代这些功能
 
 ### 11.4 数据恢复
@@ -330,29 +365,39 @@ update t1 set c=c+1 where ID=2;
 ### 11.5 WAL机制和组提交
 
 - WAL：
-
+  
   - WAL机制 (Write Ahead Log)定义:
     - WAL指的是**对数据文件进行修改前，必须将修改先记录到日志**。MySQL为了保证ACID中的一致性和持久性，使用了WAL
   - Redo log的作用:
     - Redo log就是一种WAL的应用。当数据库忽然掉电，再重新启动时，MySQL可以通过Redo log还原数据。也就是说，每次事务提交时，不用同步刷新磁盘数据文件，只需要同步刷新Redo log就足够了。**相比写数据文件时的随机IO，写Redo log时的顺序IO能够提高事务提交速度**
+
 - 组提交：
+  
   - 若事务为非只读事务，则事务每次提交都需要fsync操作，以保证redolog都已经写入磁盘。磁盘的fsync性能有限，为了提高磁盘fsync效率，数据库提供了group commit的功能，即一次fsync操作可以刷新确保多个事务的日志被写入文件
+
 - 在没有开启binlog时
+  
   - **Redo log的刷盘操作将会是最终影响MySQL TPS的瓶颈所在**。为了缓解这一问题，MySQL使用了组提交，将多个刷盘操作合并成一个，如果说10个事务依次排队刷盘的时间成本是10，那么将这10个事务一次性一起刷盘的时间成本则近似于1。
 
 - 当开启binlog时
+  
   - 为了保证Redo log和binlog的数据一致性，MySQL使用了二阶段提交，由binlog作为事务的协调者。而 引入二阶段提交 使得binlog又成为了性能瓶颈，先前的Redo log 组提交 也成了摆设。为了再次缓解这一问题，**MySQL增加了binlog的组提交**，目的同样是将binlog的多个刷盘操作合并成一个，结合Redo log本身已经实现的 组提交，分为三个阶段(Flush 阶段、Sync 阶段、Commit 阶段)完成binlog 组提交，最大化每次刷盘的收益，弱化磁盘瓶颈，提高性能
 
 ### 11.6 undo log 、slow log
 
 - 什么是undo log？
+  
   - 是逻辑日志，可以保存数据内容
   - undo log本身的操作都会记录到redo log，因此undo log可以不必立即持久化到磁盘中，因为undo log即便丢失了也可以通过redo log将其恢复
+
 - undo log的作用？
+  
   - undo log是为了实现事务的`原子性`，在MySQL的InnoDB存储引擎中用还用undo log来实现`多版本并发控制(MVCC)`
   - 保证`事务`进行`rollback`时的`原子性和一致性`，当事务进行`回滚`的时候可以用undo log的数据进行`恢复`。
   - 用于MVCC`快照读`的数据，在MVCC多版本控制中，通过读取`undo log`的`历史版本数据`可以实现`不同事务版本号`都拥有自己`独立的快照数据版本`。
+
 - undo log如何保证原子性和一致性？
+  
   - **为了满足事务原子性，每次对记录操作前，都会把旧值备份到undo log，如果执行出错或者用户主动执行rollback，系统可以利用undo log中的备份将数据恢复到事务开始之前的状态**，备份之后才进行数据的修改
   - redo log基本上都是是顺序写的，而undo log是需要进行**随机读写**的
   - **磁盘上不存在单独的 undo log 文件**，它存放在数据库内部的特殊段(segment)中，这称之为 **undo 段**，innodb为每行undo log记录都实现了三个隐藏字段
@@ -360,32 +405,41 @@ update t1 set c=c+1 where ID=2;
     - 7字节的回滚指针 (`DB_ROLL_PTR`)
     - 隐藏的ID
   - **undo log会产生redo log**，也就是说undo log的产生会伴随着redo log的产生，因为undo log也需要持久性的保护
+
 - undo log分类：
+  
   - `insert undo log`：代表事务在insert新记录时产生的undo log , 由于insert操作只对事务自己可见，所以在事务提交后可以立即删除
   - `update undo log（主要）`：事务在进行update或delete时产生的undo log ; 这种undo log可能需要提供MVCC机制，不仅在事务回滚时需要，在快照读时也需要，所以不能在事务提交时删除。只有在快照读或事务回滚不涉及该日志时，对应的日志才会被purge线程统一清除
+
 - undo log什么时候删除？
+  
   - 当事务提交的时候，innodb不会立即删除undo log，因为后续还可能会用到undo log，如隔离级别为repeatable read时，事务读取的都是开启事务时的最新提交行版本，只要该事务不结束，该行版本就不能删除，即undo log不能删除。但是在事务提交的时候，会将该事务对应的undo log放入到删除列表中，未来通过purge来删除
-
+    
     - delete操作实际上不会直接删除，而是将delete对象打上delete flag，标记为删除，最终的删除操作是purge线程完成的。
-
+    
     - update分为两种情况：update的列是否是主键列
-
+      
       - 如果不是主键列，在undo log中直接反向记录是如何update的。即update是直接进行的
       - 如果是主键列，update分两部执行：先删除该行，再插入一行目标行
+  
   - ![image-20211102100746281](MySQL问答.assets/image-20211102100746281.png)
 
 - 什么是slow log？
+  
   - MySQL的慢查询日志是MySQL提供的一种日志记录，用来记录在MySQL中响应时间超过阀值的语句，具体指运行时间超过long_query_time值的SQL，则会被记录到慢查询日志中。
-- 怎么使用？相关参数？
-  - 相关参数：
 
+- 怎么使用？相关参数？
+  
+  - 相关参数：
+    
     - `slow_query_log`：是否开启慢查询日志，1表示开启，0表示关闭。
     - log-slow-queries：旧版（5.6以下版本）MySQL数据库慢查询日志存储路径。可以不设置该参数，系统则会默认给一个缺省的文件host_name-slow.log
     - `slow-query-log-file`：新版（5.6及以上版本）MySQL数据库慢查询日志存储路径。可以不设置该参数，系统则会默认给一个缺省的文件host_name-slow.log
     - `long_query_time`：慢查询阈值，当查询时间高于设定的阈值时，记录到日志
     - `log_queries_not_using_indexes`：未使用索引的查询也被记录到慢查询日志中（可选项）
-
+  
   - 默认情况下慢查询日志是禁用的，需要手动开启
+  
   - 默认情况下`long_query_time`的值是10秒，可以修改，一般设置为1秒，业务敏感还可以设置更低
 
 ## 12. 一条SQL语句在MySQL中的运行过程
@@ -395,26 +449,26 @@ update t1 set c=c+1 where ID=2;
 - ![image-20211102101623852](MySQL问答.assets/image-20211102101623852.png)
 
 - SQL 等执行过程分为两类，
-
+  
   - 一类对于查询等过程如下：
     - 权限校验---》查询缓存---》分析器---》优化器---》权限校验---》执行器---》引擎
   - 对于更新等语句执行流程如下：
     - 分析器----》权限校验----》执行器---》引擎---redo log prepare---》binlog---》redo log commit
 
 - 分析器：
-
+  
   - MySQL 没有命中缓存，那么就会进入分析器，分析器主要是用来分析 SQL 语句是来干嘛的，分析器也会分为几步：
   - **第一步，词法分析**，一条 SQL 语句有多个字符串组成，首先要提取关键字，比如 select，提出查询的表，提出字段名，提出查询条件等等。做完这些操作后，就会进入第二步。
   - **第二步，语法分析**，主要就是判断你输入的 sql 是否正确，是否符合 MySQL 的语法。
   - 完成这 2 步之后，MySQL 就准备开始执行了，但是如何执行，怎么执行是最好的结果呢？这个时候就需要优化器上场了。
 
--  优化器
-
+- 优化器
+  
   - 优化器的作用就是它认为的最优的执行方案去执行（有时候可能也不是最优，这篇文章涉及对这部分知识的深入讲解），比如多个索引的时候该如何选择索引，多表查询的时候如何选择关联顺序等。
   - 可以说，经过了优化器之后可以说这个语句具体该如何执行就已经定下来。
 
 - 执行器
-
+  
   - 当选择了执行方案后，MySQL 就准备开始执行了，首先执行前会校验该用户有没有权限，如果没有权限，就会返回错误信息，如果有权限，就会去调用引擎的接口，返回接口执行的结果。
 
 - 语句分析：
@@ -425,8 +479,8 @@ update t1 set c=c+1 where ID=2;
 
 - MySQL 自带的日志模块式 **binlog（归档日志）** ，所有的存储引擎都可以使用，
 
--  InnoDB 引擎还自带了一个日志模块 **redo log（重做日志）**，我们就以 InnoDB 模式下来探讨这个语句的执行流程。流程如下：
-
+- InnoDB 引擎还自带了一个日志模块 **redo log（重做日志）**，我们就以 InnoDB 模式下来探讨这个语句的执行流程。流程如下：
+  
   - 先查询到张三这一条数据，如果有缓存，也是会用到**缓存**。
   - 然后拿到查询的语句，把 age 改为 19，然后调用引擎 API 接口，写入这一行数据，InnoDB 引擎把数据保存在内存中，同时记录 redo log，此时 redo log 进入 prepare 状态，
   - 然后告诉**执行器**，执行完成了，随时可以提交。

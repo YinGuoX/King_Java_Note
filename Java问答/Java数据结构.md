@@ -11,23 +11,34 @@
 - ![img](Java数据结构.assets/1592280-9ac3d20e25c4967b.png)
 
 - 线性集合，支持两端的元素插入和移除。
+
 - Deque是`double ended queue`的简称，习惯上称之为双端队列。
+
 - 大多数Deque 实现对它们可能包含的元素的数量没有固定的限制，但是该接口支持容量限制的deques以及没有固定大小限制的deque。
+
 - 不支持索引访问元素。
+
 - **Deque的使用场景**
    在一般情况，不涉及到并发的情况下，有两个实现类，可根据其自身的特性进行选择，分别是：
+  
   - LinkedList 大小可变的链表双端队列，允许元素为插入null。
   - ArrayDeque 大下可变的数组双端队列，不允许插入null。
   - ConcurrentLinkedDeque 大小可变且线程安全的链表双端队列，非阻塞，不允许插入null。
   - LinkedBlockingDeque 为线程安全的双端队列，在队列为空的情况下，获取操作将会阻塞，直到有元素添加。
+
 - 两组方法：
+  
   - 抛出异常
   - 抛出返回值
   - ![image-20211104144526908](Java数据结构.assets/image-20211104144526908.png)
+
 - Deque当作队列使用：
+  
   - 以下方法都可使用：
   - ![image-20211104144734633](Java数据结构.assets/image-20211104144734633.png)
+
 - Deque当成栈使用：
+  
   - ![image-20211104144805863](Java数据结构.assets/image-20211104144805863.png)
 
 ## 2. HashMap
@@ -42,33 +53,33 @@
 ```java
 // 默认容量16
 static final int DEFAULT_INITIAL_CAPACITY = 1 << 4; 
- 
+
 // 最大容量
 static final int MAXIMUM_CAPACITY = 1 << 30;    
- 
+
 // 默认负载因子0.75
 static final float DEFAULT_LOAD_FACTOR = 0.75f; 
 // 阈值 = 容量 x 负载因子，假设当前 HashMap的容量是 16，负载因子是默认值 0.75，那么当 size 到达 16 x 0.75= 12 的时候，就会触发扩容。
- 
+
 // 链表节点转换红黑树节点的阈值, 9个节点转
 static final int TREEIFY_THRESHOLD = 8; 
- 
+
 // 红黑树节点转换链表节点的阈值, 6个节点转
 static final int UNTREEIFY_THRESHOLD = 6;   
- 
+
 // 转红黑树时, table的最小长度
 static final int MIN_TREEIFY_CAPACITY = 64; 
- 
+
 // 链表节点, 继承自Entry
 static class Node<K,V> implements Map.Entry<K,V> {  
     final int hash;
     final K key;
     V value;
     Node<K,V> next;
- 
+
     // ... ...
 }
- 
+
 // 红黑树节点
 static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
     TreeNode<K,V> parent;  // red-black tree links
@@ -76,7 +87,7 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
     TreeNode<K,V> right;
     TreeNode<K,V> prev;    // needed to unlink next upon deletion
     boolean red;
-   
+
     // ...
 }
 ```
@@ -86,7 +97,7 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
 - 无论是增删改查，都需要先确定key对应的hash值是多少，才能找到key在hashmap中的位置！
 
 - hash值期望的效果？
-
+  
   - 元素位置尽量分布均匀些，尽量使得每个位置上的元素数量只有一个，那么当我们用 hash 算法求得这个位置的时候，马上就可以知道对应位置的元素就是我们要的，不用遍历链表/红黑树，大大优化了查询的效率。
 
 - hash源码：
@@ -103,18 +114,18 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
   // 将(tab.length - 1) 与 hash值进行&运算
   int index = (n - 1) & hash;
   ```
-
+  
   - 拿到key的hashCode值
   - 将hashCode的高位参与与运算，重新计算hash值
   - 最后再和table.length-1进行于运算，获取索引值
 
 - 索引的模运算的改进：
-
+  
   - 前提是数组长度为2的n次方
   - (table.length -1) & h” 来得到该对象的索引位置，这个优化是基于以下公式：x mod 2^n = x & (2^n - 1)。
 
 - 计算hash为什么高16位也要参加运算？
-
+  
   - 散列更加均匀，减少hash冲突
 
 ### 2.3 get()
@@ -124,7 +135,7 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
       Node<K,V> e;
       return (e = getNode(hash(key), key)) == null ? null : e.value;
   }
-   
+  
   final Node<K,V> getNode(int hash, Object key) {
       Node<K,V>[] tab; Node<K,V> first, e; int n; K k;
       // 1.对table进行校验：table不为空 && table长度大于0 && 
@@ -151,81 +162,90 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
       // 6.找不到符合的返回空
       return null;
   }
-  
+  ```
   
   // ====================
   final TreeNode<K,V> getTreeNode(int h, Object k) {
+  
       // 1.首先找到红黑树的根节点；2.使用根节点调用find方法
       return ((parent != null) ? root() : this).find(h, k, null);
+  
   }
   
   // ==================
   /**
-   * 从调用此方法的节点开始查找, 通过hash值和key找到对应的节点
-   * 此方法是红黑树节点的查找, 红黑树是特殊的自平衡二叉查找树
-   * 平衡二叉查找树的特点：左节点<根节点<右节点
-   */
+* 从调用此方法的节点开始查找, 通过hash值和key找到对应的节点
+
+* 此方法是红黑树节点的查找, 红黑树是特殊的自平衡二叉查找树
+
+* 平衡二叉查找树的特点：左节点<根节点<右节点
+  */
   final TreeNode<K,V> find(int h, Object k, Class<?> kc) {
-      // 1.将p节点赋值为调用此方法的节点，即为红黑树根节点
-      TreeNode<K,V> p = this;
-      // 2.从p节点开始向下遍历
-      do {
-          int ph, dir; K pk;
-          TreeNode<K,V> pl = p.left, pr = p.right, q;
-          // 3.如果传入的hash值小于p节点的hash值，则往p节点的左边遍历
-          if ((ph = p.hash) > h)
-              p = pl;
-          else if (ph < h) // 4.如果传入的hash值大于p节点的hash值，则往p节点的右边遍历
-              p = pr;
-          // 5.如果传入的hash值和key值等于p节点的hash值和key值,则p节点为目标节点,返回p节点
-          else if ((pk = p.key) == k || (k != null && k.equals(pk)))
-              return p;
-          else if (pl == null)    // 6.p节点的左节点为空则将向右遍历
-              p = pr;
-          else if (pr == null)    // 7.p节点的右节点为空则向左遍历
-              p = pl;
-          // 8.将p节点与k进行比较
-          else if ((kc != null ||
-                    (kc = comparableClassFor(k)) != null) && // 8.1 kc不为空代表k实现了Comparable
-                   (dir = compareComparables(kc, k, pk)) != 0)// 8.2 k<pk则dir<0, k>pk则dir>0
-              // 8.3 k<pk则向左遍历(p赋值为p的左节点), 否则向右遍历
-              p = (dir < 0) ? pl : pr;
-          // 9.代码走到此处, 代表key所属类没有实现Comparable, 直接指定向p的右边遍历
-          else if ((q = pr.find(h, k, kc)) != null) 
-              return q;
-          // 10.代码走到此处代表“pr.find(h, k, kc)”为空, 因此直接向左遍历
-          else
-              p = pl;
-      } while (p != null);
-      return null;
+   // 1.将p节点赋值为调用此方法的节点，即为红黑树根节点
+   TreeNode<K,V> p = this;
+   // 2.从p节点开始向下遍历
+   do {
+  
+       int ph, dir; K pk;
+       TreeNode<K,V> pl = p.left, pr = p.right, q;
+       // 3.如果传入的hash值小于p节点的hash值，则往p节点的左边遍历
+       if ((ph = p.hash) > h)
+           p = pl;
+       else if (ph < h) // 4.如果传入的hash值大于p节点的hash值，则往p节点的右边遍历
+           p = pr;
+       // 5.如果传入的hash值和key值等于p节点的hash值和key值,则p节点为目标节点,返回p节点
+       else if ((pk = p.key) == k || (k != null && k.equals(pk)))
+           return p;
+       else if (pl == null)    // 6.p节点的左节点为空则将向右遍历
+           p = pr;
+       else if (pr == null)    // 7.p节点的右节点为空则向左遍历
+           p = pl;
+       // 8.将p节点与k进行比较
+       else if ((kc != null ||
+                 (kc = comparableClassFor(k)) != null) && // 8.1 kc不为空代表k实现了Comparable
+                (dir = compareComparables(kc, k, pk)) != 0)// 8.2 k<pk则dir<0, k>pk则dir>0
+           // 8.3 k<pk则向左遍历(p赋值为p的左节点), 否则向右遍历
+           p = (dir < 0) ? pl : pr;
+       // 9.代码走到此处, 代表key所属类没有实现Comparable, 直接指定向p的右边遍历
+       else if ((q = pr.find(h, k, kc)) != null) 
+           return q;
+       // 10.代码走到此处代表“pr.find(h, k, kc)”为空, 因此直接向左遍历
+       else
+           p = pl;
+  
+   } while (p != null);
+   return null;
   }
   
   // ==========================
   static Class<?> comparableClassFor(Object x) {
-      // 1.判断x是否实现了Comparable接口
-      if (x instanceof Comparable) {
-          Class<?> c; Type[] ts, as; Type t; ParameterizedType p;
-          // 2.校验x是否为String类型
-          if ((c = x.getClass()) == String.class) // bypass checks
-              return c;
-          if ((ts = c.getGenericInterfaces()) != null) {
-              // 3.遍历x实现的所有接口
-              for (int i = 0; i < ts.length; ++i) {
-                  // 4.如果x实现了Comparable接口，则返回x的Class
-                  if (((t = ts[i]) instanceof ParameterizedType) &&
-                      ((p = (ParameterizedType)t).getRawType() ==
-                       Comparable.class) &&
-                      (as = p.getActualTypeArguments()) != null &&
-                      as.length == 1 && as[0] == c) // type arg is c
-                      return c;
-              }
-          }
-      }
-      return null;
+   // 1.判断x是否实现了Comparable接口
+   if (x instanceof Comparable) {
+  
+       Class<?> c; Type[] ts, as; Type t; ParameterizedType p;
+       // 2.校验x是否为String类型
+       if ((c = x.getClass()) == String.class) // bypass checks
+           return c;
+       if ((ts = c.getGenericInterfaces()) != null) {
+           // 3.遍历x实现的所有接口
+           for (int i = 0; i < ts.length; ++i) {
+               // 4.如果x实现了Comparable接口，则返回x的Class
+               if (((t = ts[i]) instanceof ParameterizedType) &&
+                   ((p = (ParameterizedType)t).getRawType() ==
+                    Comparable.class) &&
+                   (as = p.getActualTypeArguments()) != null &&
+                   as.length == 1 && as[0] == c) // type arg is c
+                   return c;
+           }
+       }
+  
+   }
+   return null;
   }
   
   ```
-
+  
+  ```
 - ![image-20211107092244761](Java数据结构.assets/image-20211107092244761.png)
 
 ### 2.4 put()
@@ -234,7 +254,7 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
   public V put(K key, V value) {
       return putVal(hash(key), key, value, false, true);
   }
-   
+  
   final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
                  boolean evict) {
       Node<K,V>[] tab; Node<K,V> p; int n, i;
@@ -329,7 +349,7 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
               // 6.2 否则使用定义的一套规则来比较k和p节点的key的大小, 用来决定向左还是向右查找
               dir = tieBreakOrder(k, pk); // dir<0则代表k<pk，则向p左边查找；反之亦然
           }
-   
+  
           TreeNode<K,V> xp = p;   // xp赋值为x的父节点,中间变量,用于下面给x的父节点赋值
           // 7.dir<=0则向p左边查找,否则向p右边查找,如果为null,则代表该位置即为x的目标位置
           if ((p = (dir <= 0) ? p.left : p.right) == null) {
@@ -382,7 +402,7 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
               // 3.将链表节点转红黑树节点
               TreeNode<K,V> p = replacementTreeNode(e, null);
               // 4.如果是第一次遍历，将头节点赋值给hd
-              if (tl == null)	// tl为空代表为第一次循环
+              if (tl == null)    // tl为空代表为第一次循环
                   hd = p;
               else {
                   // 5.如果不是第一次遍历，则处理当前节点的prev属性和上一个节点的next属性
@@ -415,8 +435,8 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
               root = x;   // 将x设置为根节点
           }
           else {
-              K k = x.key;	// k赋值为x的key
-              int h = x.hash;	// h赋值为x的hash值
+              K k = x.key;    // k赋值为x的key
+              int h = x.hash;    // h赋值为x的hash值
               Class<?> kc = null;
               // 3.如果当前节点x不是根节点, 则从根节点开始查找属于该节点的位置
               for (TreeNode<K,V> p = root;;) {
@@ -434,7 +454,7 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
                            (dir = compareComparables(kc, k, pk)) == 0)
                       // 6.2 使用定义的一套规则来比较x节点和p节点的大小，用来决定向左还是向右查找
                       dir = tieBreakOrder(k, pk);
-   
+  
                   TreeNode<K,V> xp = p;   // xp赋值为x的父节点,中间变量用于下面给x的父节点赋值
                   // 7.dir<=0则向p左边查找,否则向p右边查找,如果为null,则代表该位置即为x的目标位置
                   if ((p = (dir <= 0) ? p.left : p.right) == null) {
@@ -623,12 +643,12 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
    * 扩容后，红黑树的hash分布，只可能存在于两个位置：原索引位置、原索引位置+oldCap
    */
   final void split(HashMap<K,V> map, Node<K,V>[] tab, int index, int bit) {
-      TreeNode<K,V> b = this;	// 拿到调用此方法的节点
+      TreeNode<K,V> b = this;    // 拿到调用此方法的节点
       TreeNode<K,V> loHead = null, loTail = null; // 存储索引位置为:“原索引位置”的节点
       TreeNode<K,V> hiHead = null, hiTail = null; // 存储索引位置为:“原索引+oldCap”的节点
       int lc = 0, hc = 0;
       // 1.以调用此方法的节点开始，遍历整个红黑树节点
-      for (TreeNode<K,V> e = b, next; e != null; e = next) {	// 从b节点开始遍历
+      for (TreeNode<K,V> e = b, next; e != null; e = next) {    // 从b节点开始遍历
           next = (TreeNode<K,V>)e.next;   // next赋值为e的下个节点
           e.next = null;  // 同时将老表的节点设置为空，以便垃圾收集器回收
           // 2.如果e的hash值与老表的容量进行与运算为0,则扩容后的索引位置跟老表的索引位置一样
@@ -716,7 +736,7 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
       return (e = removeNode(hash(key), key, null, false, true)) == null ?
           null : e.value;
   }
-   
+  
   final Node<K,V> removeNode(int hash, Object key, Object value,
                              boolean matchValue, boolean movable) {
       Node<K,V>[] tab; Node<K,V> p; int n, index;
@@ -740,7 +760,7 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
                       if (e.hash == hash &&
                           ((k = e.key) == key ||
                            (key != null && key.equals(k)))) {
-                          node = e;	// 赋值给node, 并跳出循环
+                          node = e;    // 赋值给node, 并跳出循环
                           break;
                       }
                       p = e;  // p节点赋值为本次结束的e，在下一次循环中，e为p的next节点
@@ -813,7 +833,7 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
           return;
       }
       // --- 链表的处理end ---
-   
+  
       // --- 以下代码为红黑树的处理 ---
       // 11.将p赋值为要被移除的node节点，pl赋值为p的左节点，pr赋值为p 的右节点
       TreeNode<K,V> p = this, pl = left, pr = right, replacement;
@@ -907,7 +927,7 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
       // 17.如果p节点不为红色则进行红黑树删除平衡调整
       // (如果删除的节点是红色则不会破坏红黑树的平衡无需调整)
       TreeNode<K,V> r = p.red ? root : balanceDeletion(root, replacement);
-   
+  
       // 18.如果p节点为叶子节点, 则简单的将p节点去除即可
       if (replacement == p) {
           TreeNode<K,V> pp = p.parent;
@@ -931,7 +951,6 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
 ### 2.7 为什么HashMap长度要为2的幂次方？
 
 - ```java
-  
   // 通过一系列的无符号右移+或操作
   // 来实现：返回一个大于cap并且是最近的2的整数次幂的数
   static final int tableSizeFor(int cap) {
@@ -946,7 +965,7 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
   ```
 
 - 为什么要一定要把数组长度赋值为2的幂次方？
-
+  
   - 先看put()方法！
 
 - 添加元素时索引的下标是通过取模运算获得，但是我们知道计算机的运行效率：加法(减法)>乘法>除法>取模，取模的效率是最低的。=》取模计算效率低
@@ -954,14 +973,14 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
 - 又因为在HashMap中要通过取模去定位索引，并且HashMap是在不停的扩容，**数组一旦达到容量的阈值的时候就需要对数组进行扩容。那么扩容就意味着要进行数组的移动，数组一旦移动，每移动一次就要重回记算索引，这个过程中牵扯大量元素的迁移，就会大大影响效率。**=》取模在计算索引和扩容时又是必要的！
 
 - 想办法将取模运算改成更加有效的计算！
-
+  
   - **与运算**`(n-1) & hash`取代**取模运算**`hash%length`
   - 公式：x mod 2^n = x & (2^n - 1)。
 
 - 并且保证能取到数组的每一位，减少哈希碰撞，不浪费大量的数组资源
 
 - 总结：
-
+  
   - 常规的hash设计是：桶的大小设置为素数，因为相对来说：素数导致哈希冲突的概率是要小于合数的
   - HashTable采用的就是素数，但是不能保证扩容后还是素数，因此导致扩容后原来的元素位置很大可能会发生变化，需要元素移动，影响效率
   - HashMap采用2的n次方，主要是为了取模和扩容时优化！
@@ -1019,4 +1038,3 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
 - 当同一个索引位置的节点在移除后达到 6 个时，并且该索引位置的节点为红黑树节点，会触发红黑树节点转链表节点。红黑树节点转链表节点的具体方法为源码中的 untreeify 方法。
 - HashMap 在 JDK 1.8 之后不再有死循环的问题，JDK 1.8 之前存在死循环的根本原因是在扩容后同一索引位置的节点顺序会反掉。
 - HashMap 是非线程安全的，在并发场景下使用 ConcurrentHashMap 来代替。
-

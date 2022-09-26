@@ -25,7 +25,7 @@
 - 应该注意到，在阻塞的过程中，其它应用进程还可以执行，因此阻塞不意味着整个操作系统都被阻塞。因为其它应用进程还可以执行，所以不消耗 CPU 时间，这种模型的 CPU 利用率会比较高。
 
 - 下图中，recvfrom() 用于接收 Socket 传来的数据，并复制到应用进程的缓冲区 buf 中。这里把 recvfrom() 当成系统调用。
-
+  
   - ```c
     ssize_t recvfrom(int sockfd, void *buf, size_t len, int flags, struct sockaddr *src_addr, socklen_t *addrlen);
     ```
@@ -77,6 +77,7 @@
 ## 2.1 select
 
 - select 允许应用程序监视一组文件描述符，等待一个或者多个描述符成为就绪状态，从而完成 I/O 操作。
+
 - **另一种理解：**这个时候C同学来装水，发现有一排水龙头，舍管阿姨告诉他这些水龙头都还没有水，等有水了告诉他。于是等啊等(select调用中)，过了一会阿姨告诉他有水了，但不知道是哪个水龙头有水，自己看吧。于是C同学一个个打开，往杯子里装水(recv)。（Java的NIO就是如此，需要自己去遍历哪个socket已经就绪了！）
 
 - ```c
@@ -119,7 +120,7 @@
           // output event on sock2
   }
   ```
-
+  
   - fd_set 使用数组实现，数组大小使用 FD_SETSIZE 定义，所以只能监听少于 FD_SETSIZE 数量的描述符。有三种类型的描述符类型：readset、writeset、exceptset，分别对应读、写、异常条件的描述符集合。
   - timeout 为超时参数，调用 select 会一直阻塞直到有描述符的事件到达或者等待的时间超过 timeout。
   - 成功调用返回结果大于 0，出错返回结果为 -1，超时返回结果为 0。
@@ -170,11 +171,10 @@
           fds[1].revents = 0;
           // output event on sock2
   }
-  
   ```
 
 - select和poll的区别？
-
+  
   - 功能：
     - select 和 poll 的功能基本相同，不过在一些实现细节上有所不同。
     - select 会修改描述符，而 poll 不会；
@@ -250,7 +250,7 @@
 - **epoll 只需要将描述符从进程缓冲区向内核缓冲区拷贝一次，并且进程不需要通过轮询来获得事件完成的描述符。**
 
 - epoll的工作模式？
-
+  
   - LT（level trigger）模式
     - 当 epoll_wait() 检测到描述符事件到达时，将此事件通知进程，进程可以不立即处理该事件，下次调用 epoll_wait() 会再次通知进程。是默认的一种模式，并且同时支持 Blocking 和 No-Blocking。
   - ET（edge trigger）模式
@@ -258,7 +258,7 @@
     - 很大程度上减少了 epoll 事件被重复触发的次数，因此效率要比 LT 模式高。只支持 No-Blocking，以避免由于一个文件句柄的阻塞读/阻塞写操作把处理多个文件描述符的任务饿死。
 
 - epoll和select、poll的区别？
-
+  
   - epoll 仅适用于 Linux OS。
   - epoll 比 select 和 poll 更加灵活而且没有描述符数量限制。
   - epoll 对多线程编程更有友好，一个线程调用了 epoll_wait() 另一个线程关闭了同一个描述符也不会产生像 select 和 poll 的不确定情况。
@@ -275,4 +275,3 @@
   - 需要同时监控小于 1000 个描述符，就没有必要使用 epoll，因为这个应用场景下并不能体现 epoll 的优势。
   - 需要监控的描述符状态变化多，而且都是非常短暂的，也没有必要使用 epoll
   - 因为 epoll 中的所有描述符都存储在内核中，造成每次需要对描述符的状态改变都需要通过 epoll_ctl()  进行系统调用，频繁系统调用降低效率。并且 epoll 的描述符存储在内核，不容易调试。
-

@@ -5,25 +5,25 @@
 # 1. HTTP概览
 
 - 什么是HTTP？
-
+  
   - HTTP(Hypertext transfer protocol)超文本传输协议，通过浏览器和服务器进行数据交互，进行超文本（文本、图片、视频等）传输的规定。
   - 客户端发送一个请求报文给服务器，服务器根据请求报文中的信息进行处理，并将处理结果放入响应报文中返回给客户端。
 
 - HTTP请求报文：
-
+  
   - 请求行：
-
+    
     - 包含请求方法、URL、协议版本
-
+  
   - 请求头：
-
+    
     - 格式为：k-v键值对的形式，服务器可以根据请求头获取客户端的信息
-
+  
   - 请求体：
-
+    
     - 用空行分割请求头和请求体
     - 存放用户的请求的数据
-
+  
   - ```html
     GET http://www.example.com/ HTTP/1.1
     Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
@@ -41,20 +41,20 @@
     ```
 
 - HTTP响应报文：
-
+  
   - 状态行：
-
+    
     - 包含协议版本、状态码以及描述，
-
+  
   - 响应头
-
+    
     - 和请求头类似，也是以k-v键值对的形式存储服务器的信息
-
+  
   - 响应体
-
+    
     - 用空行分割请求头和请求体
     - 存放服务器的响应的数据
-
+  
   - ```xml
     HTTP/1.1 200 OK
     Age: 529651
@@ -77,13 +77,13 @@
     <html>
     <head>
         <title>Example Domain</title>
-    	// 省略... 
+        // 省略... 
     </body>
     </html>
     ```
 
 - 什么是URL、有什么用？
-
+  
   - URI：Uniform Resource Identifier：统一资源标志符，可以唯一标识一个资源
   - URL：Uniform Resource Location：统一资源定位符，可以提供该资源的路径，是一个具体的URI，可以用来标识一个资源，并且还可以指明如何定位这个资源
   - URL是URI的子集，URL在URI的基础上增加了定位的功能，URI 除了包含 URL，还包含 URN（Uniform Resource Name，统一资源名称），它只是用来定义一个资源的名称，并不具备定位该资源的能力。
@@ -142,78 +142,78 @@
 # 4. HTTP首部
 
 - HTTP协议有四种类型的首部字段
-
+  
   - 通用首部字段
   - 请求首部字段
   - 响应首部字段
   - 实体首部字段
 
--  通用首部字段
-
-  |    首部字段名     |                    说明                    |
-  | :---------------: | :----------------------------------------: |
-  |   Cache-Control   |               控制缓存的行为               |
-  |    Connection     | 控制不再转发给代理的首部字段、管理持久连接 |
-  |       Date        |             创建报文的日期时间             |
-  |      Pragma       |                  报文指令                  |
-  |      Trailer      |             报文末端的首部一览             |
-  | Transfer-Encoding |         指定报文主体的传输编码方式         |
-  |      Upgrade      |               升级为其他协议               |
-  |        Via        |            代理服务器的相关信息            |
-  |      Warning      |                  错误通知                  |
+- 通用首部字段
+  
+  | 首部字段名             | 说明                    |
+  |:-----------------:|:---------------------:|
+  | Cache-Control     | 控制缓存的行为               |
+  | Connection        | 控制不再转发给代理的首部字段、管理持久连接 |
+  | Date              | 创建报文的日期时间             |
+  | Pragma            | 报文指令                  |
+  | Trailer           | 报文末端的首部一览             |
+  | Transfer-Encoding | 指定报文主体的传输编码方式         |
+  | Upgrade           | 升级为其他协议               |
+  | Via               | 代理服务器的相关信息            |
+  | Warning           | 错误通知                  |
 
 - 请求首部字段
-
-  |     首部字段名      |                      说明                       |
-  | :-----------------: | :---------------------------------------------: |
-  |       Accept        |            用户代理可处理的媒体类型             |
-  |   Accept-Charset    |                  优先的字符集                   |
-  |   Accept-Encoding   |                 优先的内容编码                  |
-  |   Accept-Language   |             优先的语言（自然语言）              |
-  |    Authorization    |                  Web 认证信息                   |
-  |       Expect        |              期待服务器的特定行为               |
-  |        From         |               用户的电子邮箱地址                |
-  |        Host         |               请求资源所在服务器                |
-  |      If-Match       |              比较实体标记（ETag）               |
-  |  If-Modified-Since  |               比较资源的更新时间                |
-  |    If-None-Match    |        比较实体标记（与 If-Match 相反）         |
-  |      If-Range       |      资源未更新时发送实体 Byte 的范围请求       |
+  
+  | 首部字段名               | 说明                                |
+  |:-------------------:|:---------------------------------:|
+  | Accept              | 用户代理可处理的媒体类型                      |
+  | Accept-Charset      | 优先的字符集                            |
+  | Accept-Encoding     | 优先的内容编码                           |
+  | Accept-Language     | 优先的语言（自然语言）                       |
+  | Authorization       | Web 认证信息                          |
+  | Expect              | 期待服务器的特定行为                        |
+  | From                | 用户的电子邮箱地址                         |
+  | Host                | 请求资源所在服务器                         |
+  | If-Match            | 比较实体标记（ETag）                      |
+  | If-Modified-Since   | 比较资源的更新时间                         |
+  | If-None-Match       | 比较实体标记（与 If-Match 相反）             |
+  | If-Range            | 资源未更新时发送实体 Byte 的范围请求             |
   | If-Unmodified-Since | 比较资源的更新时间（与 If-Modified-Since 相反） |
-  |    Max-Forwards     |                 最大传输逐跳数                  |
-  | Proxy-Authorization |         代理服务器要求客户端的认证信息          |
-  |        Range        |               实体的字节范围请求                |
-  |       Referer       |            对请求中 URI 的原始获取方            |
-  |         TE          |                传输编码的优先级                 |
-  |     User-Agent      |              HTTP 客户端程序的信息              |
+  | Max-Forwards        | 最大传输逐跳数                           |
+  | Proxy-Authorization | 代理服务器要求客户端的认证信息                   |
+  | Range               | 实体的字节范围请求                         |
+  | Referer             | 对请求中 URI 的原始获取方                   |
+  | TE                  | 传输编码的优先级                          |
+  | User-Agent          | HTTP 客户端程序的信息                     |
 
 - 响应首部字段
-
-  |     首部字段名     |             说明             |
-  | :----------------: | :--------------------------: |
-  |   Accept-Ranges    |     是否接受字节范围请求     |
-  |        Age         |     推算资源创建经过时间     |
-  |        ETag        |        资源的匹配信息        |
-  |      Location      |   令客户端重定向至指定 URI   |
+  
+  | 首部字段名              | 说明             |
+  |:------------------:|:--------------:|
+  | Accept-Ranges      | 是否接受字节范围请求     |
+  | Age                | 推算资源创建经过时间     |
+  | ETag               | 资源的匹配信息        |
+  | Location           | 令客户端重定向至指定 URI |
   | Proxy-Authenticate | 代理服务器对客户端的认证信息 |
-  |    Retry-After     |   对再次发起请求的时机要求   |
-  |       Server       |    HTTP 服务器的安装信息     |
-  |        Vary        |   代理服务器缓存的管理信息   |
-  |  WWW-Authenticate  |   服务器对客户端的认证信息   |
+  | Retry-After        | 对再次发起请求的时机要求   |
+  | Server             | HTTP 服务器的安装信息  |
+  | Vary               | 代理服务器缓存的管理信息   |
+  | WWW-Authenticate   | 服务器对客户端的认证信息   |
 
 - 实体首部字段
-
-  |    首部字段名    |          说明          |
-  | :--------------: | :--------------------: |
-  |      Allow       | 资源可支持的 HTTP 方法 |
-  | Content-Encoding | 实体主体适用的编码方式 |
-  | Content-Language |   实体主体的自然语言   |
-  |  Content-Length  |     实体主体的大小     |
-  | Content-Location |   替代对应资源的 URI   |
-  |   Content-MD5    |   实体主体的报文摘要   |
-  |  Content-Range   |   实体主体的位置范围   |
-  |   Content-Type   |   实体主体的媒体类型   |
-  |     Expires      | 实体主体过期的日期时间 |
-  |  Last-Modified   |  资源的最后修改日期时  |
+  
+  | 首部字段名            | 说明             |
+  |:----------------:|:--------------:|
+  | Allow            | 资源可支持的 HTTP 方法 |
+  | Content-Encoding | 实体主体适用的编码方式    |
+  | Content-Language | 实体主体的自然语言      |
+  | Content-Length   | 实体主体的大小        |
+  | Content-Location | 替代对应资源的 URI    |
+  | Content-MD5      | 实体主体的报文摘要      |
+  | Content-Range    | 实体主体的位置范围      |
+  | Content-Type     | 实体主体的媒体类型      |
+  | Expires          | 实体主体过期的日期时间    |
+  | Last-Modified    | 资源的最后修改日期时     |
 
 # 5. HTTP通信管理
 
@@ -276,49 +276,49 @@
 ## 5.3 HTTP缓存
 
 - 为什么要使用缓存？
-
+  
   - 缓解服务器压力；
   - 降低客户端获取资源的延迟：缓存通常位于内存中，读取缓存的速度更快。并且缓存服务器在地理位置上也有可能比源服务器来得近，例如浏览器缓存。
 
 - 如何实现缓存？
-
+  
   - 让代理服务器进行缓存
   - 让客户端浏览器进行缓存
 
 - 如何控制缓存？
-
+  
   - HTTP/1.1 通过 Cache-Control 首部字段来控制缓存。
-
+  
   - Cache-Control : no-store 指令规定不能对请求或响应的任何一部分进行缓存。
-
+  
   - Cache-Control : no-cache 指令规定缓存服务器需要先向源服务器验证缓存资源的有效性，只有当缓存资源有效时才能使用该缓存对客户端的请求进行响应。
-
+  
   - Cache-Control : private 指令规定了将资源作为私有缓存，只能被单独用户使用，一般存储在用户浏览器中。
-
+  
   - Cache-Control : public 指令规定了将资源作为公共缓存，可以被多个用户使用，一般存储在代理服务器中。
-
+  
   - 缓存过期机制：
-
+    
     - max-age 指令出现在请求报文，并且缓存资源的缓存时间小于该指令指定的时间，那么就能接受该缓存。
-
+    
     - max-age 指令出现在响应报文，表示缓存资源在缓存服务器中保存的时间。
-
+    
     - ```html
       Cache-Control: max-age=31536000
       ```
-
+    
     - Expires 首部字段也可以用于告知缓存服务器该资源什么时候会过期。
-
+    
     - ```html
       Expires: Wed, 04 Jul 2012 08:26:05 GMT
       ```
-
+    
     - 在 HTTP/1.1 中，会优先处理 max-age 指令；
-
+    
     - 在 HTTP/1.0 中，max-age 指令会被忽略掉。
 
 - 缓存如何验证？
-
+  
   - ETag首部字段的意义？
     - ETag是资源的唯一标识。URL 不能唯一表示资源，例如 `http://www.google.com/` 有中文和英文两个资源，只有 ETag 才能对这两个资源进行唯一标识。
   - 可以将缓存资源的 ETag 值放入 If-None-Match 首部，服务器收到该请求后，判断缓存资源的 ETag 值和资源的最新 ETag 值是否一致，如果一致则表示缓存资源有效，返回 304 Not Modified。
@@ -354,17 +354,17 @@
 - 如果网络出现中断，服务器只发送了一部分数据，范围请求可以使得客户端只请求服务器未发送的那部分数据，从而避免服务器重新发送所有数据。
 
 - 如何实现范围请求？
-
+  
   - 1、Range：在请求报文中添加 Range 首部字段指定请求的范围。
-
+    
     - ```html
       GET /z4d4kWk.jpg HTTP/1.1
       Host: i.imgur.com
       Range: bytes=0-1023
       ```
-
+    
     - 请求成功的话服务器返回的响应包含 206 Partial Content 状态码。
-
+    
     - ```html
       HTTP/1.1 206 Partial Content
       Content-Range: bytes 0-1023/146515
@@ -372,15 +372,15 @@
       ...
       (binary content)
       ```
-
+  
   - 2、Accept-Ranges：响应首部字段 Accept-Ranges 用于告知客户端是否能处理范围请求，可以处理使用 bytes，否则使用 none。
-
+    
     - ```html
       Accept-Ranges: bytes
       ```
 
 - 进行范围请求的响应状态码？
-
+  
   - 在请求成功的情况下，服务器会返回 206 Partial Content 状态码。
   - 在请求的范围越界的情况下，服务器会返回 416 Requested Range Not Satisfiable 状态码。
   - 在不支持范围请求的情况下，服务器会返回 200 OK 状态码
@@ -451,17 +451,21 @@
 - 主要参考自：https://www.jianshu.com/p/93e0faf5edb8
 
 - 什么是TLS？
+  
   - 安全传输层协议：Transport Layer Security
-  -  安全传输层协议（TLS）用于在两个通信应用程序之间提供保密性和数据完整性。该协议由两层组成： 
+  - 安全传输层协议（TLS）用于在两个通信应用程序之间提供保密性和数据完整性。该协议由两层组成： 
     - TLS 记录协议（TLS Record）
     - TLS 握手协议（TLS Handshake）。
     - 较低的层为 TLS 记录协议，位于某个可靠的传输协议（例如 TCP）上面
+
 - 什么是SSL？
+  
   - SSL：（Secure Socket Layer，安全套接字层），位于可靠的面向连接的网络层协议和应用层协议之间的一种协议层。
   - SSL通过互相认证、使用数字签名确保完整性、使用加密确保私密性，以实现客户端和服务器之间的安全通讯。
   - 该协议由两层组成：SSL记录协议和SSL握手协议。
 
 - SSL和TLS的区别？
+  
   - TLS应该是SSL的升级版
 
 ## 6.1 加密-防止窃听
@@ -539,7 +543,7 @@
   - 不仅如此，HTTP/2.0 也使用 Huffman 编码对首部字段进行压缩。
   - ![img](2_计算机网络HTTP.assets/_u4E0B_u8F7D.png)
 
-# 8. HTTP1.1信特性
+# 8. HTTP1.1新特性
 
 - 长连接、流水线
 - 支持同时打开多个TCP连接
